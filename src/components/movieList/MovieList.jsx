@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Col, Row, Button, Radio } from "antd";
+
 import Spinner from "../spinner/Spinner";
-import AppHeader from "../appHeader/AppHeader";
+import MovieCardView from "../movieCardView/MovieCardView";
 
 import useKinopoiskService from "../../services/KinopoiskService";
-
-import { Col, Row, Card, Button } from "antd";
-const { Meta } = Card;
 
 const MovieList = () => {
     const [movieList, setMovieList] = useState([]);
@@ -17,8 +16,9 @@ const MovieList = () => {
 
     useEffect(() => {
         onRequest(limit, true);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line no-use-before-define, react-hooks/exhaustive-deps
     }, []);
+
     const onRequest = (limit, initial) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllMovies(limit)
@@ -37,22 +37,7 @@ const MovieList = () => {
             return (
                 <Col span={6} key={item.id}>
                     <Link to={`/${item.id}`}>
-                        <Card
-                            hoverable
-                            cover={<img alt={item.name} src={item.poster} />}
-                        >
-                            <Meta
-                                title={`${item.name}, 
-                        ${item.year}, ${item.type}`}
-                                description={item.genres.map((genre, i) => {
-                                    if (item.genres.length > i + 1) {
-                                        return `${genre.name}, `;
-                                    } else {
-                                        return `${genre.name} `;
-                                    }
-                                })}
-                            />
-                        </Card>
+                        <MovieCardView props={item} />
                     </Link>
                 </Col>
             );
@@ -67,13 +52,24 @@ const MovieList = () => {
     const spinner = loading && !newItemLoading ? <Spinner /> : null;
     return (
         <>
-            <AppHeader />
+            <Radio.Group
+                defaultValue={limit}
+                onChange={e => {
+                    onRequest(+e.target.value);
+                }}
+            >
+                <Radio.Button value="10">10</Radio.Button>
+                <Radio.Button value="25">25</Radio.Button>
+                <Radio.Button value="50">50</Radio.Button>
+            </Radio.Group>
             {spinner}
             {items}
             <Button
                 block
                 disabled={newItemLoading}
-                onClick={() => onRequest(limit)}
+                onClick={() => {
+                    onRequest(limit, true);
+                }}
             >
                 Показать больше...
             </Button>

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Layout, Input, Col, Row, Card } from "antd";
+import { Layout, Input, Col, Row } from "antd";
+
+import MovieCardView from "../movieCardView/MovieCardView";
 
 import useKinopoiskService from "../../services/KinopoiskService";
 
 const { Header } = Layout;
-const { Meta } = Card;
 const layoutStyle = {
     overflow: "hidden",
     width: "100%",
@@ -46,22 +47,7 @@ const MovieSearchForm = () => {
             return (
                 <Col span={6} key={item.id}>
                     <Link to={`/${item.id}`}>
-                        <Card
-                            hoverable
-                            cover={<img alt={item.name} src={item.poster} />}
-                        >
-                            <Meta
-                                title={`${item.name},
-                      ${item.year}, ${item.type}`}
-                                description={item.genres.map((genre, i) => {
-                                    if (item.genres.length > i + 1) {
-                                        return `${genre.name}, `;
-                                    } else {
-                                        return `${genre.name} `;
-                                    }
-                                })}
-                            />
-                        </Card>
+                        <MovieCardView props={item} />
                     </Link>
                 </Col>
             );

@@ -1,4 +1,4 @@
-import MovieList from "../movieList/MovieList";
+import MainPage from "../pages/MainPage";
 import MovieItem from "../movieItem/MovieItem";
 import Page404 from "../pages/Page404";
 
@@ -9,7 +9,7 @@ function App() {
         <>
             <Router>
                 <Routes>
-                    <Route path="/" element={<MovieList />} />
+                    <Route path="/" element={<MainPage />} />
                     <Route path="/:id" element={<MovieItem />} />
                     <Route path="*" element={<Page404 />} />
                 </Routes>

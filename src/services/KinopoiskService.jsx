@@ -8,7 +8,6 @@ const useKinopoiskService = () => {
 
     const getAllMovies = async (limit = _baseLimit) => {
         const res = await request(`${_apiBase}?page=1&limit=${limit}`);
-        console.log(res);
         return res.docs.map(_transformMovies);
     };
 
@@ -26,7 +25,7 @@ const useKinopoiskService = () => {
         return {
             id: movies.id,
             name: movies.name,
-            poster: movies.poster.url,
+            poster: movies.poster.previewUrl,
             year: movies.year,
             description: movies.description,
             genres: movies.genres,

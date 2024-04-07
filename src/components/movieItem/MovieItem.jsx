@@ -19,13 +19,10 @@ const MovieItem = () => {
     const updateData = () => {
         clearError();
 
-        // eslint-disable-next-line default-case
-
         getMovie(id).then(onDataLoaded);
     };
     const onDataLoaded = data => {
         setData(data);
-        console.log("data: ", data);
     };
 
     const spinner = loading ? <Spinner /> : null;
