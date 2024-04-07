@@ -1,32 +1,33 @@
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import useKinopoiskService from "../../services/KinopoiskService";
+
 import Spinner from "../spinner/Spinner";
+import { getMovieAxios } from "../../api/api";
 
 import { Card, Button, Flex, Typography } from "antd";
 
 const MovieItem = () => {
+    const [loading, setLoading] = useState(false);
     const { id } = useParams();
     const [data, setData] = useState(null);
-    const { loading, error, clearError, getMovie } = useKinopoiskService();
 
     useEffect(() => {
         updateData();
+        setLoading(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const updateData = () => {
-        clearError();
-
-        getMovie(id).then(onDataLoaded);
+        getMovieAxios(id).then(onDataLoaded);
     };
     const onDataLoaded = data => {
         setData(data);
+        setLoading(false);
     };
 
     const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error || !data) ? <View movie={data} /> : null;
+    const content = !(loading || !data) ? <View movie={data} /> : null;
 
     return (
         <>

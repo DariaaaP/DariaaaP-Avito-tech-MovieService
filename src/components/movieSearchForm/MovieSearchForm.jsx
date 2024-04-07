@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout, Input, Col, Row } from "antd";
 
+import Spinner from "../spinner/Spinner";
 import MovieCardView from "../movieCardView/MovieCardView";
-
-import useKinopoiskService from "../../services/KinopoiskService";
+import { getMovieByNameAxios } from "../../api/api";
 
 const { Header } = Layout;
 const layoutStyle = {
@@ -22,8 +22,8 @@ const headerStyle = {
 };
 
 const MovieSearchForm = () => {
+    const [loading, setLoading] = useState(false);
     const [movie, setMovie] = useState([]);
-    const { clearError, getMovieByName } = useKinopoiskService();
     const { Search } = Input;
     const onSearch = value => {
         console.log("movieName: ", value);
@@ -32,12 +32,12 @@ const MovieSearchForm = () => {
 
     const onMovieLoaded = movie => {
         setMovie(movie);
+        setLoading(false);
     };
 
     const updateMovie = name => {
-        clearError();
-
-        getMovieByName(name)
+        setLoading(true);
+        getMovieByNameAxios(name)
             .then(onMovieLoaded)
             .catch(err => console.log(err));
     };
@@ -58,7 +58,9 @@ const MovieSearchForm = () => {
             </Row>
         );
     }
+
     const results = renderItems(movie);
+    const spinner = loading ? <Spinner /> : null;
 
     return (
         <>
@@ -74,6 +76,7 @@ const MovieSearchForm = () => {
                     />
                 </Header>
             </Layout>
+            {spinner}
             {results}
         </>
     );
