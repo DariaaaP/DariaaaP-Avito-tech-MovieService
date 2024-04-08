@@ -1,44 +1,43 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Col, Row, Button, Radio } from "antd";
+import { Col, Row, Button, Pagination } from "antd";
 import { useSetRecoilState, useRecoilValue } from "recoil";
-import { movieState } from "../../store/store";
+import { movieState } from "../../store/mainStore";
+import { movieByNameState } from "../../store/movieByNameStore";
 import { getAllMoviesAxios } from "../../api/api";
 
 import Spinner from "../spinner/Spinner";
 import MovieCardView from "../movieCardView/MovieCardView";
 
-// import useKinopoiskService from "../../services/KinopoiskService";
-
 const MovieList = () => {
     const setMovie = useSetRecoilState(movieState);
     const movies = useRecoilValue(movieState);
+    const setMovieByName = useSetRecoilState(movieByNameState);
+    const moviesByName = useRecoilValue(movieByNameState);
+    const [page, setPage] = useState(1);
+    const [pageCurrent, setPageCurrent] = useState(1);
     const [loading, setLoading] = useState(false);
-    console.log(movies);
-
-    const [limit, setLimit] = useState(10);
+    const [pageSize, setPageSize] = useState(10);
     const [newItemLoading, setNewItemLoading] = useState(false);
 
-    // const { loading } = useKinopoiskService();
-
     useEffect(() => {
-        onRequest(limit, true);
+        onRequest(pageCurrent, pageSize, true);
         setLoading(true);
-        // eslint-disable-next-line no-use-before-define, react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const onRequest = (limit, initial) => {
+    const onRequest = (pageCurrent, pageSize, initial) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
         setLoading(true);
-        getAllMoviesAxios(limit)
+        getAllMoviesAxios(pageCurrent, pageSize)
             .then(onMovieListLoad)
             .catch(e => console.log(e));
     };
 
     const onMovieListLoad = async newMovieList => {
-        setMovie(newMovieList);
+        setPage(newMovieList[2]);
+        setMovie(newMovieList[0]);
         setNewItemLoading(false);
-        setLimit(limit => limit + 10);
         setLoading(false);
     };
 
@@ -59,30 +58,42 @@ const MovieList = () => {
         );
     }
     const items = renderItems(movies);
+    const content =
+        moviesByName.length === 0 ? (
+            items
+        ) : (
+            <>
+                {renderItems(moviesByName)}
+                <Link to="/">
+                    <Button
+                        block
+                        onClick={() => {
+                            setMovieByName([]);
+                        }}
+                    >
+                        Back to all movies
+                    </Button>
+                </Link>
+            </>
+        );
     const spinner = loading && !newItemLoading ? <Spinner /> : null;
     return (
         <>
-            <Radio.Group
-                defaultValue={limit}
-                onChange={e => {
-                    onRequest(+e.target.value);
-                }}
-            >
-                <Radio.Button value="10">10</Radio.Button>
-                <Radio.Button value="25">25</Radio.Button>
-                <Radio.Button value="50">50</Radio.Button>
-            </Radio.Group>
             {spinner}
-            {items}
-            <Button
-                block
-                disabled={newItemLoading}
-                onClick={() => {
-                    onRequest(limit, true);
+            {content}
+            <Pagination
+                total={page}
+                pageSize={pageSize}
+                current={pageCurrent}
+                onShowSizeChange={(pageCurrent, pageSize) => {
+                    setPageSize(pageSize);
+                    onRequest(pageCurrent, pageSize, true);
                 }}
-            >
-                Показать больше...
-            </Button>
+                onChange={(pageCurrent, pageSize) => {
+                    setPageCurrent(pageCurrent);
+                    onRequest(pageCurrent, pageSize, true);
+                }}
+            />
         </>
     );
 };

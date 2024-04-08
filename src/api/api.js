@@ -8,10 +8,15 @@ const instance = axios.create({
     },
 });
 
-export async function getAllMoviesAxios(limit) {
+export async function getAllMoviesAxios(page, limit) {
     try {
-        const response = await instance.get(`movie?page=1&limit=${limit}`);
-        return response.data.docs.map(_transformMovies);
+        const response = await instance.get(
+            `movie?page=${page}&limit=${limit}`
+        );
+        const total = response.data.total;
+        const pages = response.data.pages;
+        console.log([response.data.docs.map(_transformMovies), total, pages]);
+        return [response.data.docs.map(_transformMovies), total, pages];
     } catch (error) {
         console.error(error);
     }
