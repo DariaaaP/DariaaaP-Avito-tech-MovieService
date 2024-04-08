@@ -1,24 +1,9 @@
 import { useState } from "react";
-import { Layout, Input } from "antd";
+import { Input } from "antd";
 import { movieByNameState } from "../../store/movieByNameStore";
 import { useSetRecoilState } from "recoil";
 
 import { getMovieByNameAxios } from "../../api/api";
-
-const { Header } = Layout;
-const layoutStyle = {
-    overflow: "hidden",
-    width: "100%",
-    maxWidth: "100%",
-};
-const headerStyle = {
-    textAlign: "center",
-    color: "#fff",
-    height: 64,
-    paddingInline: 48,
-    lineHeight: "64px",
-    backgroundColor: "#4096ff",
-};
 
 const MovieSearchForm = () => {
     const setMovieByName = useSetRecoilState(movieByNameState);
@@ -29,6 +14,7 @@ const MovieSearchForm = () => {
     const onSearch = value => {
         updateMovie(value);
         setInputValue("");
+        // localStorage.setItem("search", value);
     };
 
     const onMovieLoaded = movie => {
@@ -43,20 +29,16 @@ const MovieSearchForm = () => {
 
     return (
         <>
-            <Layout style={layoutStyle}>
-                <Header style={headerStyle}>
-                    <Search
-                        value={inputValue}
-                        onChange={e => setInputValue(e.target.value)}
-                        placeholder="Фильмы, сериалы"
-                        onSearch={onSearch}
-                        style={{
-                            width: 300,
-                            margin: "10px 0 0 auto",
-                        }}
-                    />
-                </Header>
-            </Layout>
+            <Search
+                value={inputValue}
+                onChange={e => setInputValue(e.target.value)}
+                placeholder="Фильмы, сериалы"
+                onSearch={onSearch}
+                style={{
+                    width: 300,
+                    margin: "10px 0 0 auto",
+                }}
+            />
         </>
     );
 };

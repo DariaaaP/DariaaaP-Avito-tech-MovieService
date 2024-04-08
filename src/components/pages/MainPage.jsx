@@ -1,10 +1,10 @@
-import MovieSearchForm from "../movieSearchForm/MovieSearchForm";
 import MovieList from "../movieList/MovieList";
+import AppHeader from "../appHeader/AppHeader";
 
 const MainPage = () => {
     return (
         <>
-            <MovieSearchForm />
+            <AppHeader />
             <MovieList />
         </>
     );
