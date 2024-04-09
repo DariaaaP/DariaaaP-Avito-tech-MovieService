@@ -17,10 +17,10 @@ const itemsStyle = {
 const MovieAllFilters = () => {
     const [toggled, setToggled] = useState(false);
 
-    // document.addEventListener("click", e => {
-    //     e.stopPropagation();
-    //     setToggled(false);
-    // });
+    document.addEventListener("click", e => {
+        e.stopPropagation();
+        setToggled(false);
+    });
 
     const classNameToggle = toggled ? "filters filters--active" : "filters";
 
@@ -42,7 +42,13 @@ const MovieAllFilters = () => {
             >
                 Filter
             </button>
-            <div id="filter-container" className={classNameToggle}>
+            <div
+                id="filter-container"
+                className={classNameToggle}
+                onClick={e => {
+                    e.stopPropagation();
+                }}
+            >
                 <Form
                     onFinish={handleSubmit}
                     labelCol={{
