@@ -16,6 +16,8 @@ const instance2 = axios.create({
     },
 });
 
+//https://api.kinopoisk.dev/v1.4/image?page=1&limit=10&movieId=12345
+
 export async function getAllMoviesAxios(page, limit) {
     try {
         const response = await instance.get(
@@ -27,6 +29,24 @@ export async function getAllMoviesAxios(page, limit) {
         throw error;
     }
 }
+
+export async function getMoviesPosters(id) {
+    try {
+        const response = await instance.get(
+            `image?page=1&limit=10&movieId=${id}`
+        );
+
+        return response.data.docs.map(_transformMoviesPosters);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const _transformMoviesPosters = posters => {
+    return {
+        link: posters.previewUrl,
+    };
+};
 
 export async function getMovieAxios(id) {
     try {
@@ -100,7 +120,8 @@ const _transformMovie = movie => {
         poster: movie.poster.url,
         year: movie.year,
         type: movie.type,
-        description: movie.description,
+        genres: movie.genres,
+        description: movie.description || "Нет никакой информации",
         rating: movie.rating.imdb,
         actors: movie.persons,
         similarmovies: movie.similarMovies,
