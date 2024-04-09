@@ -69,6 +69,12 @@ const MovieAllFilters = () => {
                                         <Select.Option value="demo">
                                             Demo
                                         </Select.Option>
+                                        <Select.Option value="demo2">
+                                            Demo2
+                                        </Select.Option>
+                                        <Select.Option value="demo3">
+                                            Demo3
+                                        </Select.Option>
                                     </Select>
                                 </Form.Item>
                                 <Form.Item label="Возрастной рейтинг">

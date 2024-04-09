@@ -8,6 +8,14 @@ const instance = axios.create({
     },
 });
 
+const instance2 = axios.create({
+    baseURL: "https://api.kinopoisk.dev/v1",
+    headers: {
+        accept: "application/json",
+        "X-API-KEY": `${process.env.REACT_APP_API_KEY}`,
+    },
+});
+
 export async function getAllMoviesAxios(page, limit) {
     try {
         const response = await instance.get(
@@ -15,10 +23,9 @@ export async function getAllMoviesAxios(page, limit) {
         );
         const total = response.data.total;
         const pages = response.data.pages;
-        console.log([response.data.docs.map(_transformMovies), total, pages]);
         return [response.data.docs.map(_transformMovies), total, pages];
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 }
 
@@ -27,7 +34,7 @@ export async function getMovieAxios(id) {
         const response = await instance.get(`movie/${id}`);
         return _transformMovie(response.data);
     } catch (error) {
-        console.error(error);
+        throw error;
     }
 }
 
@@ -36,7 +43,40 @@ export async function getMovieByNameAxios(name) {
         const response = await instance.get(`movie/search?query=${name}`);
         return response.data.docs.map(_transformMovies);
     } catch (error) {
-        console.error(error);
+        throw error;
+    }
+}
+
+export async function getReviews(id) {
+    try {
+        const response = await instance.get(
+            `review?page=1&limit=10&selectFields=&movieId=${id}`
+        );
+        return response.data.docs.map(_transformReviews);
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function getCountries() {
+    try {
+        const response = await instance2.get(
+            `movie/possible-values-by-field?field=countries.name`
+        );
+
+        return response.data.map(_transformCountries);
+    } catch (error) {
+        if (error.response) {
+            console.log(
+                "Server responded with status code:",
+                error.response.status
+            );
+            console.log("Response data:", error.response.data);
+        } else if (error.request) {
+            console.log("No response received:", error.request);
+        } else {
+            console.log("Error creating request:", error.message);
+        }
     }
 }
 
@@ -59,6 +99,24 @@ const _transformMovie = movie => {
         year: movie.year,
         type: movie.type,
         description: movie.description,
-        rating: movie.rating,
+        rating: movie.rating.imdb,
+        actors: movie.persons,
+        similarmovies: movie.similarMovies,
+    };
+};
+
+const _transformReviews = rewies => {
+    return {
+        title: rewies.title,
+        type: rewies.type,
+        review: rewies.review,
+        date: rewies.date,
+        author: rewies.author,
+    };
+};
+
+const _transformCountries = countries => {
+    return {
+        name: countries.name,
     };
 };
