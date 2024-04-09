@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Spinner from "../spinner/Spinner";
 import { getMovieAxios, getReviews } from "../../api/api";
 
-import { Card, Button, Flex, Typography, Carousel, Col, Row } from "antd";
+import { Card, Button, Flex, Typography, Carousel } from "antd";
 import { StarTwoTone } from "@ant-design/icons";
 const { Meta } = Card;
 
@@ -35,7 +35,7 @@ const MovieItem = () => {
     };
 
     const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || !data) ? (
+    const content = !(loading || !data || !reiews) ? (
         <View movie={data} rev={reiews} />
     ) : null;
 
@@ -65,7 +65,6 @@ const View = ({ movie, rev }) => {
         similarmovies,
     } = movie;
 
-    console.log(rev);
     const [slice1, setSlice1] = useState([0, 10]);
     const [act, setAct] = useState([]);
 

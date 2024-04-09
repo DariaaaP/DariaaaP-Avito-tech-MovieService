@@ -1,28 +1,29 @@
 import { useState } from "react";
 import { Input } from "antd";
 import { movieByNameState } from "../../store/movieByNameStore";
+import { searchStore } from "../../store/searchStore";
 import { useSetRecoilState } from "recoil";
 
 import { getMovieByNameAxios } from "../../api/api";
 
 const MovieSearchForm = () => {
     const setMovieByName = useSetRecoilState(movieByNameState);
-
+    const searchMovie = useSetRecoilState(searchStore);
     const [inputValue, setInputValue] = useState("");
 
     const { Search } = Input;
     const onSearch = value => {
-        updateMovie(value);
+        updateMovie(1, 10, value);
+        searchMovie(value);
         setInputValue("");
-        // localStorage.setItem("search", value);
     };
 
-    const onMovieLoaded = movie => {
-        setMovieByName(movie);
+    const onMovieLoaded = async movie => {
+        setMovieByName([movie[0], movie[1]]);
     };
 
-    const updateMovie = name => {
-        getMovieByNameAxios(name)
+    const updateMovie = (pageCurrent, pageSize, name) => {
+        getMovieByNameAxios(pageCurrent, pageSize, name)
             .then(onMovieLoaded)
             .catch(err => console.log(err));
     };

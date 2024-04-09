@@ -21,9 +21,8 @@ export async function getAllMoviesAxios(page, limit) {
         const response = await instance.get(
             `movie?page=${page}&limit=${limit}`
         );
-        const total = response.data.total;
-        const pages = response.data.pages;
-        return [response.data.docs.map(_transformMovies), total, pages];
+
+        return [response.data.docs.map(_transformMovies), response.data.total];
     } catch (error) {
         throw error;
     }
@@ -38,10 +37,13 @@ export async function getMovieAxios(id) {
     }
 }
 
-export async function getMovieByNameAxios(name) {
+export async function getMovieByNameAxios(page, limit, name) {
     try {
-        const response = await instance.get(`movie/search?query=${name}`);
-        return response.data.docs.map(_transformMovies);
+        const response = await instance.get(
+            `movie/search?page=${page}&limit=${limit}&query=${name}`
+        );
+
+        return [response.data.docs.map(_transformMovies), response.data.total];
     } catch (error) {
         throw error;
     }
