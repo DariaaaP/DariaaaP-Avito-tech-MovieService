@@ -33,7 +33,6 @@ const MovieAllFilters = () => {
         <>
             <button
                 onClick={e => {
-                    // e.preventDefault();
                     e.stopPropagation();
                     setToggled(toggle => !toggle);
                 }}

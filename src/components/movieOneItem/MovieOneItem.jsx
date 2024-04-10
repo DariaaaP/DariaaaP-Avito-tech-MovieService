@@ -1,15 +1,19 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-import { Card, Carousel } from "antd";
+import { Card, Carousel, Flex } from "antd";
 import { StarTwoTone } from "@ant-design/icons";
+
 import ReviewsView from "../reviewsView/ReviewsView";
 import img from "../../resources/img/plug.png";
 
 import "./movieoneitem.scss";
+
 const { Meta } = Card;
-const MovieOneItem = ({ movie, reiews, posters }) => {
+
+const MovieOneItem = ({ movie, reviews, posters }) => {
     const {
-        id,
+        // id,
         name,
         poster,
         year,
@@ -17,10 +21,25 @@ const MovieOneItem = ({ movie, reiews, posters }) => {
         description,
         rating,
         genres,
-        // actors,
+        actors,
         similarmovies,
     } = movie;
-    console.log(movie);
+
+    const [slice1, setSlice1] = useState([0, 10]);
+    const [act, setAct] = useState([]);
+    useEffect(() => {
+        setAct(act => [...act, ...actors.slice(slice1[0], slice1[1])]);
+    }, [actors, slice1]);
+
+    const [slice2, setSlice2] = useState([0, 3]);
+    const [reviewsPag, setReviewsPag] = useState([]);
+    useEffect(() => {
+        setReviewsPag(reviewsPag => [
+            ...reviewsPag,
+            ...reviews.slice(slice2[0], slice2[1]),
+        ]);
+    }, [reviews, slice2]);
+
     return (
         <div className="single-movie">
             <img
@@ -105,11 +124,58 @@ const MovieOneItem = ({ movie, reiews, posters }) => {
                     })}
                 </Carousel>
             </div>
-            {/* <div className="single-movie__reviews">
-                {reiews.map(review => {
-                    return <ReviewsView props={review} />;
+            <div className="single-movie__title">
+                <span className="single-movie__title-center">Актёры:</span>
+                {act.map((actor, i) => {
+                    return <Flex>{actor.name}</Flex>;
                 })}
-            </div> */}
+                {actors.length === act.length ? (
+                    <button
+                        onClick={() => {
+                            setSlice1([0, 10]);
+                            setAct([]);
+                        }}
+                    >
+                        скрыть
+                    </button>
+                ) : (
+                    <button
+                        onClick={() =>
+                            setSlice1(slice1 => [
+                                slice1[0] + 10,
+                                slice1[1] + 10,
+                            ])
+                        }
+                    >
+                        ...
+                    </button>
+                )}
+            </div>
+            <div className="single-movie__reviews">
+                <div className="single-movie__reviews-content">
+                    {reviewsPag.map(reviewPag => {
+                        return <ReviewsView props={reviewPag} />;
+                    })}
+                </div>
+                {reviews.length === reviewsPag.length ? (
+                    <button
+                        onClick={() => {
+                            setSlice2([0, 3]);
+                            setReviewsPag([]);
+                        }}
+                    >
+                        скрыть
+                    </button>
+                ) : (
+                    <button
+                        onClick={() =>
+                            setSlice2(slice2 => [slice2[0] + 3, slice2[1] + 3])
+                        }
+                    >
+                        ...
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
