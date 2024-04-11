@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, Carousel, Flex } from "antd";
 import { StarTwoTone } from "@ant-design/icons";
 
-import ReviewsView from "../reviewsView/ReviewsView";
+import movieReviewsUI from "../movieReviewsUI/movieReviewsUI";
 import img from "../../resources/img/plug.png";
 
 import "./movieoneitem.scss";
@@ -154,7 +154,7 @@ const MovieOneItem = ({ movie, reviews, posters }) => {
             <div className="single-movie__reviews">
                 <div className="single-movie__reviews-content">
                     {reviewsPag.map(reviewPag => {
-                        return <ReviewsView props={reviewPag} />;
+                        return <movieReviewsUI props={reviewPag} />;
                     })}
                 </div>
                 {reviews.length === reviewsPag.length ? (

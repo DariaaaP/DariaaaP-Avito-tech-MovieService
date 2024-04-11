@@ -5,6 +5,7 @@ import { Button, Pagination, Flex } from "antd";
 import Spinner from "../spinner/Spinner";
 import MovieCardUI from "../movieCardUI/movieCardUI";
 import ErrorMessage from "../errorMessage/ErrorMessage";
+import ErrorMoviesListMessage from "../errorMoviesListMessage/errorMoviesListMessage";
 
 import { useMoviesListStore } from "../../store/moviesListStore";
 import { observer } from "mobx-react";
@@ -45,6 +46,9 @@ const MoviesList = observer(() => {
     if (isLoading) return <Spinner />;
 
     if (hasError) return <ErrorMessage />;
+
+    if (movies.length === 0) return <ErrorMoviesListMessage />;
+    console.log("movies: ", movies);
 
     return (
         <>
