@@ -53,7 +53,7 @@ const MovieOneItem = ({ movie, reviews, posters }) => {
                 <p className="single-movie__descr">{year}</p>
                 <p className="single-movie__descr">
                     <span className="single-movie__title">Жанр:</span>
-                    {genres.map(genre => {
+                    {genres?.map(genre => {
                         return ` ${genre.name}`;
                     })}
                 </p>
@@ -74,7 +74,7 @@ const MovieOneItem = ({ movie, reviews, posters }) => {
                     Похожие фильмы:
                 </span>
                 <Carousel autoplay dotPosition={"top"}>
-                    {similarmovies.map(item => {
+                    {similarmovies?.map(item => {
                         return (
                             <Link to={`/${item.id}`}>
                                 <Card
@@ -102,7 +102,7 @@ const MovieOneItem = ({ movie, reviews, posters }) => {
             <div className="single-movie__title">
                 <span className="single-movie__title-center">Постеры:</span>
                 <Carousel dotPosition={"top"}>
-                    {posters.map((poster, i) => {
+                    {posters?.map((poster, i) => {
                         return (
                             <Card
                                 style={{

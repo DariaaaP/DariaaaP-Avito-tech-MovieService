@@ -1,5 +1,5 @@
 import MovieSearchForm from "../movieSearchForm/MovieSearchForm";
-import MovieAllFilters from "../movieAllFilters/MovieAllFilters";
+import MoviesFilters from "../moviesFilters/MoviesFilters";
 import { Layout } from "antd";
 
 import "./appheader.scss";
@@ -10,7 +10,7 @@ const AppHeader = () => {
         <>
             <Layout>
                 <Header className="header">
-                    <MovieAllFilters />
+                    <MoviesFilters />
                     <MovieSearchForm />;
                 </Header>
             </Layout>

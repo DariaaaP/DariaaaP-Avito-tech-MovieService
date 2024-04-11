@@ -18,12 +18,29 @@ const instance2 = axios.create({
 
 //https://api.kinopoisk.dev/v1.4/image?page=1&limit=10&movieId=12345
 
-export async function getAllMoviesAxios(page, limit) {
+/**
+ * @param {number} page
+ * @param {number} limit
+ * @param {string?} name
+ */
+export async function getMovies(page, limit, name, year, country, age) {
     try {
-        const response = await instance.get(
-            `movie?page=${page}&limit=${limit}`
-        );
+        let url = `movie?page=${page}&limit=${limit}`;
 
+        if (year) {
+            url += `&year=${year}`;
+        }
+        if (country) {
+            url += `&countries.name=${country}`;
+        }
+        if (age) {
+            url += `&ageRating=${age}`;
+        }
+        if (name) {
+            url = `movie/search?page=${page}&limit=${limit}&query=${name}`;
+        }
+        console.log(url);
+        const response = await instance.get(url);
         return [response.data.docs.map(_transformMovies), response.data.total];
     } catch (error) {
         throw error;
@@ -52,18 +69,6 @@ export async function getMovieAxios(id) {
     try {
         const response = await instance.get(`movie/${id}`);
         return _transformMovie(response.data);
-    } catch (error) {
-        throw error;
-    }
-}
-
-export async function getMovieByNameAxios(page, limit, name) {
-    try {
-        const response = await instance.get(
-            `movie/search?page=${page}&limit=${limit}&query=${name}`
-        );
-
-        return [response.data.docs.map(_transformMovies), response.data.total];
     } catch (error) {
         throw error;
     }
@@ -105,26 +110,24 @@ export async function getCountries() {
 const _transformMovies = movies => {
     return {
         id: movies.id,
-        name: movies.name,
+        name: movies.name || "Нет никакой информации",
         poster: movies.poster.previewUrl,
         year: movies.year,
         description: movies.description,
         genres: movies.genres,
         type: movies.type,
+        ageRating: movies.ageRating,
+        countries: movies.countries,
     };
 };
 
 const _transformMovie = movie => {
     return {
-        name: movie.name,
+        ...movie,
         poster: movie.poster.url,
-        year: movie.year,
-        type: movie.type,
-        genres: movie.genres,
         description: movie.description || "Нет никакой информации",
         rating: movie.rating.imdb,
         actors: movie.persons,
-        similarmovies: movie.similarMovies,
     };
 };
 

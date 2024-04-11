@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export const movieByNameState = atom({
-    key: "movieByNameState",
+export const moviesState = atom({
+    key: "moviesState",
     default: [],
 });

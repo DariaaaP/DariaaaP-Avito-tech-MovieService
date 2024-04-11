@@ -9,7 +9,7 @@ import { getMovieAxios, getReviews, getMoviesPosters } from "../../api/api";
 const MovieItem = () => {
     const [loading, setLoading] = useState(false);
     const { id } = useParams();
-    const [data, setData] = useState(null);
+    const [movie, setMovie] = useState(null);
     const [reviews, setReviews] = useState(null);
     const [posters, setPosters] = useState(null);
 
@@ -25,7 +25,7 @@ const MovieItem = () => {
         getMoviesPosters(id).then(onPostersLoaded);
     };
     const onDataLoaded = data => {
-        setData(data);
+        setMovie(data);
         setLoading(false);
     };
     const onReviewsLoaded = reviews => {
@@ -38,10 +38,10 @@ const MovieItem = () => {
     };
 
     const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || !data || !reviews || !posters) ? (
+    const content = !(loading || !movie || !reviews || !posters) ? (
         <MovieOneItem
-            movie={data}
-            key={data.id}
+            movie={movie}
+            key={movie.id}
             reviews={reviews}
             posters={posters}
         />

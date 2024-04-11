@@ -1,47 +1,47 @@
-import { useState } from "react";
 import { Input } from "antd";
-import { movieByNameState } from "../../store/movieByNameStore";
-import { searchStore } from "../../store/searchStore";
-import { useSetRecoilState } from "recoil";
 
-import { getMovieByNameAxios } from "../../api/api";
+import { useMoviesListStore } from "../../store/moviesListStore";
+import { observer } from "mobx-react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const MovieSearchForm = () => {
-    const setMovieByName = useSetRecoilState(movieByNameState);
-    const searchMovie = useSetRecoilState(searchStore);
-    const [inputValue, setInputValue] = useState("");
-
-    const { Search } = Input;
-    const onSearch = value => {
-        updateMovie(1, 10, value);
-        searchMovie(value);
-        setInputValue("");
-    };
-
-    const onMovieLoaded = async movie => {
-        setMovieByName([movie[0], movie[1]]);
-    };
-
-    const updateMovie = (pageCurrent, pageSize, name) => {
-        getMovieByNameAxios(pageCurrent, pageSize, name)
-            .then(onMovieLoaded)
-            .catch(err => console.log(err));
-    };
+const MovieSearchForm = observer(() => {
+    const { searchText, setSearchText, setCurrentPage, getMovies } =
+        useMoviesListStore();
+    const location = useLocation();
+    const navigate = useNavigate();
 
     return (
-        <>
-            <Search
-                value={inputValue}
-                onChange={e => setInputValue(e.target.value)}
-                placeholder="Фильмы, сериалы"
-                onSearch={onSearch}
-                style={{
-                    width: 300,
-                    margin: "10px 0 0 auto",
-                }}
-            />
-        </>
+        <Input.Search
+            value={searchText}
+            allowClear
+            onChange={e => {
+                setSearchText(e.target.value);
+            }}
+            placeholder="Фильмы, сериалы"
+            onSearch={(value, _1, { source }) => {
+                if (source === "clear") {
+                    setSearchText("");
+                }
+
+                const searchParams = new URLSearchParams(location.search);
+                searchParams.delete("page");
+
+                if (value) {
+                    searchParams.set("search", value);
+                } else {
+                    searchParams.delete("search");
+                }
+
+                setCurrentPage(1);
+                navigate(location.pathname + "?" + searchParams.toString());
+                getMovies();
+            }}
+            style={{
+                width: 300,
+                margin: "0 0 0 auto",
+            }}
+        />
     );
-};
+});
 
 export default MovieSearchForm;
