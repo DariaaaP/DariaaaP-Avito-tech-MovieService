@@ -11,7 +11,7 @@ import "./movieoneitem.scss";
 
 import { useMovieStore } from "../../store/movieStore";
 
-import MovieReviewsUI from "../MovieReviewsUI/MovieReviewsUI";
+import MovieReviewsUI from "../movieReviewsUI/MovieReviewsUI";
 
 const { Meta } = Card;
 const MovieOneItem = observer(() => {
