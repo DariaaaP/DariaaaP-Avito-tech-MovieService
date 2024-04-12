@@ -1,58 +1,44 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import MovieOneItem from "../movieOneItem/MovieOneItem";
 import Spinner from "../spinner/Spinner";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 
-import { getMovieAxios, getReviews, getMoviesPosters } from "../../api/api";
+import { useMovieStore } from "../../store/movieStore";
+import { observer } from "mobx-react";
 
-const MovieItem = () => {
-    const [loading, setLoading] = useState(false);
+const MovieItem = observer(() => {
     const { id } = useParams();
-    const [movie, setMovie] = useState(null);
-    const [reviews, setReviews] = useState(null);
-    const [posters, setPosters] = useState(null);
+
+    const {
+        movie,
+        reviews,
+        posters,
+        seriesInformation,
+        init,
+        isLoading,
+        hasError,
+    } = useMovieStore();
 
     useEffect(() => {
-        updateData();
-        setLoading(true);
+        init(id);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+    }, []);
 
-    const updateData = () => {
-        getMovieAxios(id).then(onDataLoaded);
-        getReviews(id).then(onReviewsLoaded);
-        getMoviesPosters(id).then(onPostersLoaded);
-    };
-    const onDataLoaded = data => {
-        setMovie(data);
-        setLoading(false);
-    };
-    const onReviewsLoaded = reviews => {
-        setReviews(reviews);
-        setLoading(false);
-    };
-    const onPostersLoaded = posters => {
-        setPosters(posters);
-        setLoading(false);
-    };
+    if (isLoading) return <Spinner />;
 
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || !movie || !reviews || !posters) ? (
+    if (hasError) return <ErrorMessage />;
+
+    return (
         <MovieOneItem
             movie={movie}
             key={movie.id}
             reviews={reviews}
             posters={posters}
+            seriesInformation={seriesInformation}
         />
-    ) : null;
-
-    return (
-        <>
-            {spinner}
-            {content}
-        </>
     );
-};
+});
 
 export default MovieItem;

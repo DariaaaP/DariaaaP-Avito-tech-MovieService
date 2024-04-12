@@ -1,6 +1,6 @@
 import "./moviereviewsui.scss";
 
-const movieReviewsUI = ({ props }) => {
+const MovieReviewsUI = ({ props }) => {
     const { title, type, review, date, author } = props;
 
     const standartDate = date.slice(0, 10);
@@ -27,4 +27,4 @@ const movieReviewsUI = ({ props }) => {
     );
 };
 
-export default movieReviewsUI;
+export default MovieReviewsUI;

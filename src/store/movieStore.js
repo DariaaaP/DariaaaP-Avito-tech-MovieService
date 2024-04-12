@@ -1,10 +1,18 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { createContext, useContext, useRef } from "react";
-import { getMovies } from "../api/api";
+import {
+    getMovie,
+    getMoviePosters,
+    getMovieReviews,
+    getMovieSeriesInformation,
+} from "../api/api";
 
-class MoviesListStore {
+class MovieStore {
     movie = [];
-
+    reviews = [];
+    posters = [];
+    reviewsSize = 3;
+    seriesInformation = [];
     isLoading = false;
     hasError = false;
 
@@ -12,38 +20,24 @@ class MoviesListStore {
         makeAutoObservable(this);
     }
 
-    init = (currentPage, pageSize, searchText) => {
-        this.currentPage = currentPage || 1;
-        this.pageSize = pageSize || 10;
-        this.searchText = searchText;
+    init = id => {
+        this.id = id;
 
-        this.getMovies();
+        this.getMovie();
+        this.getReviews();
+        this.getPosters();
+        this.getSeriesInformation();
     };
 
-    initCountries = countriesAll => {
-        this.countriesAll = countriesAll;
-
-        this.getCountries();
-    };
-
-    getMovies = async () => {
+    getMovie = async () => {
         this.isLoading = true;
         this.hasError = false;
 
         try {
-            const [fetchedMovies, total] = await getMovies(
-                this.currentPage,
-                this.pageSize,
-                this.searchText,
-                this.searchYear,
-                this.searchCountry,
-                this.searchAge
-            );
+            const fetchedMovie = await getMovie(this.id);
 
             runInAction(() => {
-                this.movies = fetchedMovies;
-                this.total = total;
-                this.areShownMoviesFiltered = !!this.searchText;
+                this.movie = fetchedMovie;
                 this.isLoading = false;
             });
         } catch (e) {
@@ -55,53 +49,100 @@ class MoviesListStore {
         }
     };
 
-    setMovies = movies => {
-        this.movies = movies;
+    getReviews = async () => {
+        this.isLoading = true;
+        this.hasError = false;
+
+        try {
+            const fetchedReviews = await getMovieReviews(
+                this.id,
+                this.reviewsSize
+            );
+
+            runInAction(() => {
+                this.reviews = fetchedReviews;
+                this.isLoading = false;
+            });
+        } catch (e) {
+            runInAction(() => {
+                this.hasError = true;
+                this.isLoading = false;
+            });
+            console.error(e);
+        }
     };
 
-    setPageSize = pageSize => {
-        this.pageSize = pageSize;
+    getPosters = async () => {
+        this.isLoading = true;
+        this.hasError = false;
+
+        try {
+            const fetchedPosters = await getMoviePosters(this.id);
+
+            runInAction(() => {
+                this.posters = fetchedPosters;
+                this.isLoading = false;
+            });
+        } catch (e) {
+            runInAction(() => {
+                this.hasError = true;
+                this.isLoading = false;
+            });
+            console.error(e);
+        }
     };
 
-    setCurrentPage = currentPage => {
-        this.currentPage = currentPage;
+    getSeriesInformation = async () => {
+        this.isLoading = true;
+        this.hasError = false;
+
+        try {
+            const fetchedSeries = await getMovieSeriesInformation(this.id);
+
+            runInAction(() => {
+                this.seriesInformation = fetchedSeries;
+                this.isLoading = false;
+            });
+        } catch (e) {
+            runInAction(() => {
+                this.hasError = true;
+                this.isLoading = false;
+            });
+            console.error(e);
+        }
     };
 
-    setSearchText = searchText => {
-        this.searchText = searchText;
+    setMovies = movie => {
+        this.movie = movie;
     };
 
-    setSearchYear = searchYear => {
-        this.searchYear = searchYear;
+    setReviewsSize = reviewsSize => {
+        this.reviewsSize = reviewsSize;
     };
 
-    setSearchCountries = searchCountry => {
-        this.searchCountry = searchCountry;
-    };
-
-    setSearchAge = searchAge => {
-        this.searchAge = searchAge;
+    setReviews = reviews => {
+        this.reviews = reviews;
     };
 }
 
-const MoviesListStoreContext = createContext(null);
+const MovieStoreContext = createContext(null);
 
-export const MoviesListStoreProvider = ({ children }) => {
-    const store = useRef(new MoviesListStore());
+export const MovieStoreProvider = ({ children }) => {
+    const store = useRef(new MovieStore());
 
     return (
-        <MoviesListStoreContext.Provider value={store.current}>
+        <MovieStoreContext.Provider value={store.current}>
             {children}
-        </MoviesListStoreContext.Provider>
+        </MovieStoreContext.Provider>
     );
 };
 
-export const useMoviesListStore = () => {
-    const store = useContext(MoviesListStoreContext);
+export const useMovieStore = () => {
+    const storeMovie = useContext(MovieStoreContext);
 
-    if (!store) {
+    if (!storeMovie) {
         throw new Error("useStore must be used within a StoreProvider.");
     }
 
-    return store;
+    return storeMovie;
 };

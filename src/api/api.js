@@ -47,25 +47,25 @@ export async function getMovies(page, limit, name, year, country, age) {
     }
 }
 
-export async function getMoviesPosters(id) {
+export async function getMoviePosters(id) {
     try {
         const response = await instance.get(
             `image?page=1&limit=10&movieId=${id}`
         );
 
-        return response.data.docs.map(_transformMoviesPosters);
+        return response.data.docs.map(_transformMoviePosters);
     } catch (error) {
         throw error;
     }
 }
 
-const _transformMoviesPosters = posters => {
+const _transformMoviePosters = posters => {
     return {
         link: posters.previewUrl,
     };
 };
 
-export async function getMovieAxios(id) {
+export async function getMovie(id) {
     try {
         const response = await instance.get(`movie/${id}`);
         return _transformMovie(response.data);
@@ -74,16 +74,37 @@ export async function getMovieAxios(id) {
     }
 }
 
-export async function getReviews(id) {
+export async function getMovieReviews(id, size = 3) {
     try {
         const response = await instance.get(
-            `review?page=1&limit=10&selectFields=&movieId=${id}`
+            `review?limit=${size}&selectFields=&movieId=${id}`
         );
-        return response.data.docs.map(_transformReviews);
+        return response.data.docs.map(_transformMovieReviews);
     } catch (error) {
         throw error;
     }
 }
+
+export async function getMovieSeriesInformation(id) {
+    try {
+        const response = await instance.get(
+            `season?page=1&limit=10&selectFields=&movieId=${id}`
+        );
+        return response.data.docs.map(_transformMovieSeriesInformation);
+    } catch (error) {
+        throw error;
+    }
+}
+
+const _transformMovieSeriesInformation = serias => {
+    return {
+        movieId: serias.movieId,
+        name: serias.name,
+        episodesCount: serias.episodesCount,
+        episodes: serias.episodes,
+        enName: serias.enName,
+    };
+};
 
 export async function getCountries() {
     try {
@@ -110,7 +131,7 @@ export async function getCountries() {
 const _transformMovies = movies => {
     return {
         id: movies.id,
-        name: movies.name || "Нет никакой информации",
+        name: movies.name || movies.alternativeName || "Нет никакой информации",
         poster: movies.poster.previewUrl,
         year: movies.year,
         description: movies.description,
@@ -124,6 +145,7 @@ const _transformMovies = movies => {
 const _transformMovie = movie => {
     return {
         ...movie,
+        name: movie.name || movie.alternativeName,
         poster: movie.poster.url,
         description: movie.description || "Нет никакой информации",
         rating: movie.rating.imdb,
@@ -131,7 +153,7 @@ const _transformMovie = movie => {
     };
 };
 
-const _transformReviews = rewies => {
+const _transformMovieReviews = rewies => {
     return {
         title: rewies.title,
         type: rewies.type,

@@ -1,45 +1,17 @@
 @import '../../style/variables.scss';
 
-.single-movie {
-    margin-top: 50px;
-    display: grid;
-    grid-template-columns: 293px 550px auto;
-    column-gap: 50px;
-    row-gap: 50px;
-    align-items: start;
+.movie-page {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin: 3rem 5rem;
 
-    &__title {
-        font-weight: bold;
-        font-size: 18px;
-        line-height: 29px;
-
-        &-center {
-            display: flex;
-            justify-content: center;
-        }
+    &__link-back {
+        display: flex;
+        justify-content: end;
+    
     }
     
-    &__img {
-        width: 293px;
-        height: 450px;
-    }
-    &__name {
-        font-weight: bold;
-        font-size: 22px;
-        line-height: 29px;
-    }
-    &__descr {
-        font-size: 18px;
-        line-height: 24px;
-        margin-top: 25px;
-    }
-    &__rating {
-        font-weight: bold;
-        font-size: 24px;
-        line-height: 32px;
-        color: $color-yellow;
-        margin-top: 25px;
-    }
     &__back {
         justify-self: end;
         font-weight: bold;
@@ -52,17 +24,157 @@
         &:hover {
             color: $main-color;
         }
-        
+    }
+
+    @include respond(phone) {
+        margin: 2rem 3rem;
+        gap: 2rem;
+      }
+
+}
+
+.movie {
+    &__container {
+        display: flex;
+            gap: 3rem;
+            justify-content: space-between;
+            @include respond(phone) {
+                flex-direction: column;
+                align-items: center;
+        }
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    &__title {
+        display: flex;
+        flex-direction: row;
+    }
+    &__two-column {
+        display: flex;
+        justify-content: space-between;
+
+        &_column-dir {
+
+            @include respond(phone) {
+                flex-direction: column;
+            }
+        }
+    }
+
+    &__img {
+        width: 293px;
+        height: 450px;
+        border-radius: 3%;
+    }
+    &__name {
+        font-weight: bold;
+        font-size: 5rem;
+        line-height: 29px;
+
+        @include respond(phone) {
+            text-align: center;
+            font-size: 3.5rem;
+          }
+    }
+    &__rating {
+        @include respond(phone) {
+            text-align: center;
+            display: flex;
+            flex-direction: row;
+            // font-size: 3.5rem;
+        }
+    }
+    &__descr {
+        font-size: 18px;
+        line-height: 24px;
+        margin-top: 25px;
+
+        &_year {
+            text-align: center;
+        }
+        &_genres{
+            font-size: 1.8rem;
+        }
+        &_type {
+            color: $color-grey-dark;
+            @include respond(phone) {
+                margin-top: 0;
+
+            text-align: center;
+
+            }
+        }
+
+    }
+
+    &__sub-title {
+        font-size: 2.2rem;
+        font-weight: bold;
+        text-decoration: underline solid black;
+
+    }
+    &__rating {
+        font-weight: bold;
+        font-size: 24px;
+        line-height: 32px;
+        color: $color-yellow;
+        margin-top: 25px;
     }
 
     &__reviews {
         display: grid;
         grid-column: span 3;
+        width: 100%;
         &-content {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             column-gap: 3rem;
             row-gap: 1.5rem;
         }
+    }
+
+    &__additional-info {
+        display: flex;
+        justify-content: space-around;
+        // gap: 5rem;
+    }
+
+    &__similar-movies, &__posters {
+        width: 300px;
+    }
+}
+
+.btn-actors {
+    content: "";
+    min-width: 50px;
+    background: none;
+    border: 0;
+    color: $color-grey-dark-3;
+    font-weight: bold;
+    cursor: pointer;
+    
+        font-size: 18px;
+        line-height: 24px;
+        text-decoration-line: none;
+        &:hover {
+            color: $main-color;
+            transform: translateY(0);
+        }
+    &_remove {
+        font-size: 1.5rem;
+        &::after {
+            content: "х";
+          }
+    }
+    &_reviews {
+max-width: 50px;
+margin-top: 5rem;
+font-size: 5rem;
+
     }
 }
