@@ -11,7 +11,11 @@ class MovieStore {
     movie = [];
     reviews = [];
     posters = [];
+    reviewsLoading = false;
+    reviewsPage = 0;
     reviewsSize = 3;
+    actorsPage = 1;
+    actorsSize = 10;
     seriesInformation = [];
     isLoading = false;
     hasError = false;
@@ -24,7 +28,7 @@ class MovieStore {
         this.id = id;
 
         this.getMovie();
-        this.getReviews();
+        this.getReviews(1);
         this.getPosters();
         this.getSeriesInformation();
     };
@@ -49,27 +53,49 @@ class MovieStore {
         }
     };
 
-    getReviews = async () => {
-        this.isLoading = true;
+    getReviews = async page => {
+        this.reviewsLoading = true;
         this.hasError = false;
 
         try {
             const fetchedReviews = await getMovieReviews(
                 this.id,
+                page,
                 this.reviewsSize
             );
 
             runInAction(() => {
-                this.reviews = fetchedReviews;
-                this.isLoading = false;
+                if (page !== 1) {
+                    this.reviews.push(...fetchedReviews);
+                } else {
+                    this.reviews = fetchedReviews;
+                }
+                this.reviewsPage = page;
+                this.reviewsLoading = false;
             });
         } catch (e) {
             runInAction(() => {
                 this.hasError = true;
-                this.isLoading = false;
+                this.reviewsLoading = false;
             });
             console.error(e);
         }
+    };
+
+    getNextReviews = () => {
+        if (this.reviews.length >= (this.reviewsPage + 1) * this.reviewsSize) {
+            this.reviewsPage += 1;
+            return;
+        }
+
+        this.getReviews(this.reviewsPage + 1);
+    };
+
+    getResetReviews = () => {
+        this.reviewsPage = 1;
+        this.reviewsLoading = false;
+
+        this.getReviews(this.reviewsPage);
     };
 
     getPosters = async () => {
@@ -90,6 +116,14 @@ class MovieStore {
             });
             console.error(e);
         }
+    };
+
+    showMoreActors = () => {
+        this.actorsPage += 1;
+    };
+
+    resetActorsPagination = () => {
+        this.actorsPage = 1;
     };
 
     getSeriesInformation = async () => {
@@ -114,14 +148,6 @@ class MovieStore {
 
     setMovies = movie => {
         this.movie = movie;
-    };
-
-    setReviewsSize = reviewsSize => {
-        this.reviewsSize = reviewsSize;
-    };
-
-    setReviews = reviews => {
-        this.reviews = reviews;
     };
 }
 

@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { createContext, useContext, useRef } from "react";
-import { getMovies, getCountries } from "../api/api";
+import { getMoviesByName, getMoviesByFilters, getCountries } from "../api/api";
 
 class MoviesListStore {
     movies = [];
@@ -10,8 +10,8 @@ class MoviesListStore {
     pageSize = 10;
     moviesAgeRating = [0, 6, 12, 18]; // найти оптимальный вариант
     searchYear = null;
-    searchText = "";
-    searchCountry = "";
+    searchText = null;
+    searchCountry = null;
     searchAge = null;
     areShownMoviesFiltered = false;
     isLoading = false;
@@ -21,32 +21,46 @@ class MoviesListStore {
         makeAutoObservable(this);
     }
 
-    init = (currentPage, pageSize, searchText) => {
+    init = (
+        currentPage,
+        pageSize,
+        searchText,
+        searchCountry,
+        searchAge,
+        searchYear
+    ) => {
         this.currentPage = currentPage || 1;
         this.pageSize = pageSize || 10;
         this.searchText = searchText;
+        this.searchCountry = searchCountry;
+        this.searchAge = searchAge;
+        this.searchYear = searchYear;
 
-        this.getMovies();
-    };
-
-    initCountries = countriesAll => {
-        this.countriesAll = countriesAll;
+        if (this.searchCountry || this.searchAge || this.searchYear) {
+            this.areShownMoviesFiltered = true;
+            this.getMoviesByFilters();
+        } else {
+            if (this.searchText) {
+                this.areShownMoviesFiltered = true;
+            }
+            this.getMoviesByName();
+        }
 
         this.getCountries();
     };
 
-    getMovies = async () => {
+    getMoviesByName = async () => {
         this.isLoading = true;
         this.hasError = false;
+        this.searchCountry = null;
+        this.searchAge = null;
+        this.searchYear = null;
 
         try {
-            const [fetchedMovies, total] = await getMovies(
+            const [fetchedMovies, total] = await getMoviesByName(
                 this.currentPage,
                 this.pageSize,
-                this.searchText,
-                this.searchYear,
-                this.searchCountry,
-                this.searchAge
+                this.searchText
             );
 
             runInAction(() => {
@@ -61,6 +75,45 @@ class MoviesListStore {
                 this.isLoading = false;
             });
             console.error(e);
+        }
+    };
+
+    getMoviesByFilters = async () => {
+        this.isLoading = true;
+        this.hasError = false;
+        this.searchText = null;
+
+        try {
+            const [fetchedMovies, total] = await getMoviesByFilters(
+                this.currentPage,
+                this.pageSize,
+                this.searchCountry,
+                this.searchAge,
+                this.searchYear?.$y
+            );
+
+            runInAction(() => {
+                this.movies = fetchedMovies;
+                this.total = total;
+                this.areShownMoviesFiltered = !!(
+                    this.searchCountry || this.searchAge || this.searchYear
+                );
+                this.isLoading = false;
+            });
+        } catch (e) {
+            runInAction(() => {
+                this.hasError = true;
+                this.isLoading = false;
+            });
+            console.error(e);
+        }
+    };
+
+    getMovies = () => {
+        if (this.searchText) {
+            this.getMoviesByName();
+        } else {
+            this.getMoviesByFilters();
         }
     };
 
@@ -102,12 +155,18 @@ class MoviesListStore {
         this.searchYear = searchYear;
     };
 
-    setSearchCountries = searchCountry => {
+    setSearchCountry = searchCountry => {
         this.searchCountry = searchCountry;
     };
 
     setSearchAge = searchAge => {
         this.searchAge = searchAge;
+    };
+
+    resetFiltersPanel = () => {
+        this.searchCountry = null;
+        this.searchAge = null;
+        this.searchYear = null;
     };
 }
 

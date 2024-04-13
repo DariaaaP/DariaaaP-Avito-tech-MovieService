@@ -46,7 +46,7 @@ const ErrorMoviesListMessage = observer(() => {
                     setSearchAge(null);
                     searchParams.delete("year");
                     searchParams.delete("ageRating");
-                    searchParams.delete("countries.name");
+                    searchParams.delete("country");
                     navigate(location.pathname + "?" + searchParams.toString());
                     searchParams.delete("page");
                     setCurrentPage(1);

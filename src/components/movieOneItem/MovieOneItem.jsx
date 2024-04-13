@@ -1,7 +1,6 @@
-import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { Card, Carousel, Flex } from "antd";
+import { Button, Card, Carousel, Flex } from "antd";
 import { StarTwoTone } from "@ant-design/icons";
 
 import img from "../../resources/img/plug.png";
@@ -18,15 +17,23 @@ const MovieOneItem = observer(() => {
     const {
         movie,
         reviews,
+        reviewsLoading,
+        reviewsPage,
+        reviewsSize,
         posters,
+        actorsPage,
+        actorsSize,
+        showMoreActors,
+        resetActorsPagination,
         seriesInformation,
         init,
         isLoading,
         hasError,
-        setReviewsSize,
-        getReviews,
-        reviewsSize,
+        getNextReviews,
+        getResetReviews,
     } = useMovieStore();
+
+    const navigate = useNavigate();
 
     const {
         // id,
@@ -41,20 +48,10 @@ const MovieOneItem = observer(() => {
         similarMovies,
     } = movie;
 
-    const [sliceActors, setSliceActors] = useState([0, 10]);
-    const [actorsArr, setActorsArr] = useState([]);
-    useEffect(() => {
-        setActorsArr(act => [
-            ...actorsArr,
-            ...actors?.slice(sliceActors[0], sliceActors[1]),
-        ]);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [actors, sliceActors]);
-
     return (
         <div className="movie-page">
             <div className="movie-page__link-back">
-                <Link to="/" className="movie-page__back">
+                <Link onClick={() => navigate(-1)} className="movie-page__back">
                     Back to all
                 </Link>
             </div>
@@ -140,47 +137,58 @@ const MovieOneItem = observer(() => {
                 </div>
                 <div className="movie__actors">
                     <span className="movie__sub-title">Актёры:</span>
-                    {actorsArr.map(actor => {
+                    {actors?.slice(0, actorsPage * actorsSize).map(actor => {
                         return <Flex>{actor.name}</Flex>;
                     })}
-                    {actors?.length === actorsArr?.length ? (
-                        <button
-                            className="btn btn_remove"
-                            onClick={() => {
-                                setSliceActors([0, 10]);
-                                setActorsArr([]);
+                    {actors?.length <= actorsPage * actorsSize ? (
+                        <Button
+                            style={{
+                                border: "none",
                             }}
-                        ></button>
+                            dashed="true"
+                            onClick={resetActorsPagination}
+                        >
+                            show less
+                        </Button>
                     ) : (
-                        <button
-                            className="btn"
-                            onClick={() =>
-                                setSliceActors(sliceActors => [
-                                    sliceActors[0] + 10,
-                                    sliceActors[1] + 10,
-                                ])
-                            }
+                        <Button
+                            style={{ border: "none" }}
+                            dashed="true"
+                            onClick={showMoreActors}
                         >
                             ...
-                        </button>
+                        </Button>
                     )}
                 </div>
             </div>
             <div className="movie__additional-info">
                 <div className="movie__reviews">
                     <div className="movie__reviews-content">
-                        {reviews?.map(review => {
-                            return <MovieReviewsUI props={review} />;
-                        })}
+                        {reviews
+                            .slice(0, reviewsPage * reviewsSize)
+                            .map(review => {
+                                return <MovieReviewsUI props={review} />;
+                            })}
                     </div>
-                    <button
-                        className="btn-actors btn-actors_reviews"
-                        onClick={() => {
-                            console.log("click");
-                        }}
-                    >
-                        ...
-                    </button>
+                    <div className="movie__btns">
+                        <Button
+                            dashed="true"
+                            className="btn btn-reviews"
+                            onClick={getNextReviews}
+                            loading={reviewsLoading}
+                        >
+                            more reviews
+                        </Button>
+                        {reviews?.length > 3 ? (
+                            <Button
+                                dashed="true"
+                                className="btn btn-reviews"
+                                onClick={getResetReviews}
+                            >
+                                show less
+                            </Button>
+                        ) : null}
+                    </div>
                 </div>
             </div>
         </div>

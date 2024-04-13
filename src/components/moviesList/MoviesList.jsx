@@ -11,6 +11,7 @@ import { useMoviesListStore } from "../../store/moviesListStore";
 import { observer } from "mobx-react";
 
 import "./movieslist.scss";
+import * as dayjs from 'dayjs';
 
 const MoviesList = observer(() => {
     const {
@@ -20,7 +21,6 @@ const MoviesList = observer(() => {
         areShownMoviesFiltered,
         currentPage,
         setCurrentPage,
-        initCountries,
         pageSize,
         setPageSize,
         init,
@@ -34,12 +34,14 @@ const MoviesList = observer(() => {
 
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
-        const searchText = searchParams.get("search");
-        const page = Number(searchParams.get("page")) || undefined;
-        const pageSize = Number(searchParams.get("pageSize")) || undefined;
+        const searchText = searchParams.get("search") || null;
+        const page = Number(searchParams.get("page")) || null;
+        const pageSize = Number(searchParams.get("pageSize")) || null;
+        const country = searchParams.get('country') || null;
+        const ageRating = searchParams.get('ageRating') || null;
+        const year = searchParams.get('year') ? dayjs(searchParams.get('year')) : null;
 
-        init(page, pageSize, searchText);
-        initCountries();
+        init(page, pageSize, searchText, country, ageRating, year);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -48,7 +50,6 @@ const MoviesList = observer(() => {
     if (hasError) return <ErrorMessage />;
 
     if (movies.length === 0) return <ErrorMoviesListMessage />;
-    console.log("movies: ", movies);
 
     return (
         <>

@@ -1,5 +1,5 @@
 import { Button, DatePicker, Form, Select, Flex } from "antd";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useMoviesListStore } from "../../store/moviesListStore";
 import { observer } from "mobx-react";
@@ -10,10 +10,12 @@ import "./moviesfilters.scss";
 const MoviesFilters = observer(() => {
     const {
         moviesAgeRating,
-        getMovies,
+        getMoviesByFilters,
         setCurrentPage,
         countriesAll,
-        setSearchCountries,
+        searchCountry,
+        setSearchCountry,
+        searchAge,
         setSearchAge,
         searchYear,
         setSearchYear,
@@ -21,57 +23,75 @@ const MoviesFilters = observer(() => {
 
     const location = useLocation();
     const navigate = useNavigate();
-    const [toggled, setToggled] = useState(false);
+    const [open, setOpen] = useState(false);
 
     const searchParams = new URLSearchParams(location.search);
 
-    document.addEventListener("click", e => {
+    const [country, setCountry] = useState(searchCountry);
+    const [age, setAge] = useState(searchAge);
+    const [year, setYear] = useState(searchYear);
+
+    const onOutsideClick = useCallback(e => {
         e.stopPropagation();
-        setToggled(false);
-    });
+        setOpen(false);
+    }, []);
 
-    const classNameToggle = toggled
-        ? "filters-container filters--active"
-        : "filters-container";
+    useEffect(() => {
+        document.addEventListener("click", onOutsideClick);
 
-    const [form] = Form.useForm();
+        return () => {
+            document.removeEventListener("click", onOutsideClick);
+        };
+    }, [onOutsideClick]);
 
-    const onFinish = values => {
-        setSearchAge(values.ageForm);
-        setSearchCountries(values.countryForm);
-
-        if (values.countryForm) {
-            searchParams.set("countries.name", values.countryForm);
+    const onFinish = () => {
+        if (country) {
+            searchParams.set("country", country);
+            setSearchCountry(country);
         } else {
-            searchParams.delete("countries.name");
-            setSearchCountries("");
+            searchParams.delete("country");
+            setSearchCountry(null);
         }
-        if (values.ageForm) {
-            searchParams.set("ageRating", values.ageForm);
+
+        if (age) {
+            searchParams.set("ageRating", age);
+            setSearchAge(age);
         } else {
             searchParams.delete("ageRating");
             setSearchAge(null);
         }
 
-        if (searchYear) {
-            searchParams.set("year", values.yearForm.$y);
+        if (year) {
+            searchParams.set("year", year?.$y);
+            setSearchYear(year);
         } else {
             searchParams.delete("year");
             setSearchYear(null);
         }
+
         searchParams.delete("page");
+        searchParams.delete("search");
 
         navigate(location.pathname + "?" + searchParams.toString());
         setCurrentPage(1);
-        getMovies();
+        getMoviesByFilters();
     };
+
+    useEffect(() => {
+        if (open) {
+            setCountry(searchCountry);
+            setAge(searchAge);
+            setYear(searchYear);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
 
     return (
         <>
             <button
                 onClick={e => {
                     e.stopPropagation();
-                    setToggled(toggle => !toggle);
+                    setOpen(toggle => !toggle);
                 }}
                 id="filter-button"
                 className="btn btn--filters"
@@ -80,13 +100,16 @@ const MoviesFilters = observer(() => {
             </button>
             <div
                 id="filter-container"
-                className={classNameToggle}
+                className={
+                    open
+                        ? "filters-container filters--active"
+                        : "filters-container"
+                }
                 onClick={e => {
                     e.stopPropagation();
                 }}
             >
                 <Form
-                    form={form}
                     labelCol={{
                         span: 14,
                     }}
@@ -99,34 +122,38 @@ const MoviesFilters = observer(() => {
                     }}
                     onFinish={onFinish}
                 >
-                    <Form.Item label="Страна" name="countryForm">
-                        <Select allowClear>
+                    <Form.Item label="Страна">
+                        <Select
+                            value={country}
+                            onChange={setCountry}
+                            allowClear
+                        >
                             {countriesAll?.map(item => (
-                                <Select.Option value={item?.name}>
+                                <Select.Option
+                                    value={item.name}
+                                    key={item.name}
+                                >
                                     {item?.name}
                                 </Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Возрастной рейтинг" name="ageForm">
-                        <Select allowClear>
+                    <Form.Item label="Возрастной рейтинг">
+                        <Select value={age} onChange={setAge} allowClear>
                             {moviesAgeRating.map(item => (
-                                <Select.Option value={item}>
-                                    {item}
+                                <Select.Option value={item} key={item}>
+                                    {item}+
                                 </Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
-                    <Form.Item label="Год" name="yearForm">
+                    <Form.Item label="Год">
                         <DatePicker
                             allowClear
                             mode="year"
+                            value={year}
                             picker="year"
-                            onChange={(value, dateString) => {
-                                setSearchYear(dateString);
-
-                                searchParams.delete("year");
-                            }}
+                            onChange={setYear}
                         />
                     </Form.Item>
                     <Form.Item
@@ -136,37 +163,23 @@ const MoviesFilters = observer(() => {
                     >
                         <Flex className="wrapper-btn">
                             <Button
-                                className="btn btn--green"
-                                type="primary"
-                                htmlType="submit"
-                                onClick={() => setToggled(false)}
-                            >
-                                Применить
-                            </Button>
-                            <Button
                                 onClick={() => {
-                                    form.setFieldValue();
-                                    setToggled(false);
-                                    setSearchCountries("");
-                                    setSearchYear(null);
-                                    setSearchAge(null);
-
-                                    searchParams.delete("year");
-                                    searchParams.delete("ageRating");
-                                    searchParams.delete("countries.name");
-                                    navigate(
-                                        location.pathname +
-                                            "?" +
-                                            searchParams.toString()
-                                    );
-                                    searchParams.delete("page");
-                                    setCurrentPage(1);
-                                    getMovies();
+                                    setCountry(null);
+                                    setAge(null);
+                                    setYear(null);
                                 }}
                                 className="btn btn--grey"
                                 htmlType="button"
                             >
                                 Сбросить
+                            </Button>
+                            <Button
+                                className="btn btn--green"
+                                type="primary"
+                                htmlType="submit"
+                                onClick={() => setOpen(false)}
+                            >
+                                Применить
                             </Button>
                         </Flex>
                     </Form.Item>

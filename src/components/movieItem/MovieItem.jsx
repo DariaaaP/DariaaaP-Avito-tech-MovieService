@@ -7,6 +7,7 @@ import ErrorMessage from "../errorMessage/ErrorMessage";
 
 import { useMovieStore } from "../../store/movieStore";
 import { observer } from "mobx-react";
+import { MovieStoreProvider } from "../../store/movieStore";
 
 const MovieItem = observer(() => {
     const { id } = useParams();
@@ -41,4 +42,12 @@ const MovieItem = observer(() => {
     );
 });
 
-export default MovieItem;
+const MovieItemWrapped = () => {
+    return (
+        <MovieStoreProvider>
+            <MovieItem />
+        </MovieStoreProvider>
+    );
+};
+
+export default MovieItemWrapped;

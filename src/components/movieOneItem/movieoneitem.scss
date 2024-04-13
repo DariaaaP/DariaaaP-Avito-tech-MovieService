@@ -138,6 +138,11 @@
         }
     }
 
+    &__btns {
+        display: flex;
+        justify-content: space-around;
+    }
+
     &__additional-info {
         display: flex;
         justify-content: space-around;
@@ -149,32 +154,16 @@
     }
 }
 
-.btn-actors {
-    content: "";
-    min-width: 50px;
-    background: none;
-    border: 0;
-    color: $color-grey-dark-3;
-    font-weight: bold;
-    cursor: pointer;
-    
-        font-size: 18px;
-        line-height: 24px;
-        text-decoration-line: none;
-        &:hover {
-            color: $main-color;
-            transform: translateY(0);
-        }
-    &_remove {
-        font-size: 1.5rem;
-        &::after {
-            content: "х";
-          }
-    }
-    &_reviews {
-max-width: 50px;
-margin-top: 5rem;
-font-size: 5rem;
+.btn {
+    &-reviews {
+        margin-top: 3rem;
 
+        text-decoration: underline dotted $color-grey-dark;
+        text-underline-offset: 5px;
+        color: $color-grey-dark;
+
+        &:hover {
+            text-decoration: none;
+        }
     }
 }

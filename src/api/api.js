@@ -23,7 +23,22 @@ const instance2 = axios.create({
  * @param {number} limit
  * @param {string?} name
  */
-export async function getMovies(page, limit, name, year, country, age) {
+export async function getMoviesByName(page, limit, name) {
+    try {
+        let url = `movie/search?page=${page}&limit=${limit}`;
+
+        if (name) {
+            url += `&query=${name}`;
+        }
+        const response = await instance.get(url);
+
+        return [response.data.docs.map(_transformMovies), response.data.total];
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function getMoviesByFilters(page, limit, country, age, year) {
     try {
         let url = `movie?page=${page}&limit=${limit}`;
 
@@ -36,11 +51,9 @@ export async function getMovies(page, limit, name, year, country, age) {
         if (age) {
             url += `&ageRating=${age}`;
         }
-        if (name) {
-            url = `movie/search?page=${page}&limit=${limit}&query=${name}`;
-        }
-        console.log(url);
+
         const response = await instance.get(url);
+
         return [response.data.docs.map(_transformMovies), response.data.total];
     } catch (error) {
         throw error;
@@ -74,10 +87,10 @@ export async function getMovie(id) {
     }
 }
 
-export async function getMovieReviews(id, size = 3) {
+export async function getMovieReviews(id, page = 1, size = 3) {
     try {
         const response = await instance.get(
-            `review?limit=${size}&selectFields=&movieId=${id}`
+            `review?page=${page}&limit=${size}&selectFields=&movieId=${id}`
         );
         return response.data.docs.map(_transformMovieReviews);
     } catch (error) {
@@ -114,17 +127,7 @@ export async function getCountries() {
 
         return response.data.map(_transformCountries);
     } catch (error) {
-        if (error.response) {
-            console.log(
-                "Server responded with status code:",
-                error.response.status
-            );
-            console.log("Response data:", error.response.data);
-        } else if (error.request) {
-            console.log("No response received:", error.request);
-        } else {
-            console.log("Error creating request:", error.message);
-        }
+        console.error(error);
     }
 }
 
