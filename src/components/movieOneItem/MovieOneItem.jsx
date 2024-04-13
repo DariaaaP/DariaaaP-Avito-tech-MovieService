@@ -35,9 +35,6 @@ const MovieOneItem = observer(() => {
         showMoreEpisodes,
         getNextSeriesInformation,
         getResetSeriesInformation,
-        init,
-        isLoading,
-        hasError,
         getNextReviews,
         getResetReviews,
     } = useMovieStore();
@@ -45,7 +42,6 @@ const MovieOneItem = observer(() => {
     const navigate = useNavigate();
 
     const {
-        // id,
         name,
         poster,
         year,
