@@ -57,8 +57,6 @@ const MovieOneItem = observer(() => {
         similarMovies,
     } = movie;
 
-    // console.log("seriesInformation: ", seriesInformation);
-
     return (
         <div className="movie-page">
             <div className="movie-page__link-back">
@@ -228,8 +226,6 @@ const MovieOneItem = observer(() => {
                             })}
                     />
                     <div className="movie__btns">
-                        {console.log("series: ", seriesInformation.length)}
-                        {console.log("+: ", seriesPage * seriesSize)}
                         {seriesInformation.length ===
                         seriesPage * seriesSize ? (
                             <Button

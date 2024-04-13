@@ -96,7 +96,9 @@ class MoviesListStore {
                 this.movies = fetchedMovies;
                 this.total = total;
                 this.areShownMoviesFiltered = !!(
-                    this.searchCountry || this.searchAge || this.searchYear
+                    this.searchCountry ||
+                    this.searchAge ||
+                    this.searchYear
                 );
                 this.isLoading = false;
             });
