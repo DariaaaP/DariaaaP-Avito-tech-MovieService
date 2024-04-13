@@ -1,0 +1,27 @@
+@import "../../style/variables.scss";
+
+.wrapper-random {
+  margin: 5rem 7rem;
+
+  &__link {
+      display: flex;
+      justify-content: end;
+      
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 24px;
+      text-decoration-line: underline solid $color-black;
+      text-underline-offset: 5px;
+      &:visited {
+          color: $color-black;
+      }
+      &:hover {
+          color: $main-color;
+      }
+
+  }
+
+  &__form {
+    margin: 3rem 5rem;
+  }
+}

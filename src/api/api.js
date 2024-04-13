@@ -131,6 +131,61 @@ export async function getCountries() {
     }
 }
 
+export async function getGenres() {
+    try {
+        const response = await instance.get(
+            `movie/possible-values-by-field?field=genres.name`
+        );
+
+        return response.data.map(_transformGenres);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const _transformGenres = genres => {
+    return {
+        name: genres.name,
+    };
+};
+
+export async function getTypesMovie() {
+    try {
+        const response = await instance.get(
+            `movie/possible-values-by-field?field=type`
+        );
+
+        return response.data.map(_transformTypes);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+const _transformTypes = types => {
+    return {
+        name: types.name,
+    };
+};
+
+export async function getRandomMovie(
+    type,
+    year,
+    rating,
+    genre,
+    country,
+    networks
+) {
+    try {
+        const response = await instance.get(
+            `'https://api.kinopoisk.dev/v1.4/movie/random?typeNumber=${type}&year${year}=&rating.kp=${rating}&genres.name=${genre}&countries.name=${country}&networks.items.name=${networks}'`
+        );
+
+        return _transformMovie(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 const _transformMovies = movies => {
     return {
         id: movies.id,

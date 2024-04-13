@@ -1,3 +1,5 @@
+@import "../../style/mixins";
+
 .header {
   width: 100%;
   max-width: 100%;
@@ -5,4 +7,8 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  @include respond(phone) {
+    height: auto;
+    flex-direction: column;
+  }
 }

@@ -1,0 +1,24 @@
+@import "../../style/variables.scss";
+
+.wrapper__login {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: $color-yellow-light;
+}
+
+.wrapper-form {
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.wrapper-btn {
+  justify-content: space-between;
+
+  @include respond(phone) {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}

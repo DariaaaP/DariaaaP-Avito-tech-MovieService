@@ -144,136 +144,173 @@ const MovieOneItem = observer(() => {
                     </Carousel>
                 </div>
                 <div className="movie__actors">
-                    <span className="movie__sub-title">Актёры:</span>
-                    {actors?.slice(0, actorsPage * actorsSize).map(actor => {
-                        return <Flex> • {actor.name}</Flex>;
-                    })}
-                    {actors?.length <= actorsPage * actorsSize ? (
-                        <Button
-                            style={{
-                                border: "none",
-                            }}
-                            dashed="true"
-                            onClick={resetActorsPagination}
-                        >
-                            show less
-                        </Button>
+                    {actors && actors.length > 0 ? (
+                        <>
+                            <span className="movie__sub-title">Актёры:</span>
+                            {actors
+                                ?.slice(0, actorsPage * actorsSize)
+                                .map(actor => {
+                                    return <Flex> • {actor.name}</Flex>;
+                                })}
+                            {actors?.length <= actorsPage * actorsSize ? (
+                                <Button
+                                    style={{
+                                        border: "none",
+                                    }}
+                                    dashed="true"
+                                    onClick={resetActorsPagination}
+                                >
+                                    show less
+                                </Button>
+                            ) : (
+                                <Button
+                                    style={{ border: "none" }}
+                                    dashed="true"
+                                    onClick={showMoreActors}
+                                >
+                                    ...
+                                </Button>
+                            )}
+                        </>
                     ) : (
-                        <Button
-                            style={{ border: "none" }}
-                            dashed="true"
-                            onClick={showMoreActors}
-                        >
-                            ...
-                        </Button>
+                        <div className="movie__sub-title">
+                            Нет информации об актёрах
+                        </div>
                     )}
                 </div>
             </div>
             <div className="movie__additional-info">
-                <div className="movie__series">
-                    <Collapse
-                        style={{ width: "100%" }}
-                        items={seriesInformation
-                            .slice(0, seriesPage * seriesSize)
-                            .map((series, i) => {
-                                return {
-                                    key: `${i}`,
-                                    label: `${series.name}`,
-                                    children: (
-                                        <>
-                                            {series.episodes
-                                                .slice(
-                                                    0,
-                                                    episodesPage * episodesSize
-                                                )
-                                                .map(ep => {
-                                                    return (
-                                                        <Flex>
-                                                            • Серия {ep.number}:
-                                                            "{ep.name}"
-                                                        </Flex>
-                                                    );
-                                                })}
-                                            {series.episodes.length >
-                                            episodesPage * episodesSize ? (
-                                                <Button
-                                                    dashed="true"
-                                                    className="btn btn-series"
-                                                    onClick={showMoreEpisodes}
-                                                >
-                                                    show more
-                                                </Button>
-                                            ) : null}
+                {seriesInformation && seriesInformation.length > 0 ? (
+                    <>
+                        <span className="movie__sub-title">
+                            Сезоны и серии:
+                        </span>
+                        <div className="movie__series">
+                            <Collapse
+                                style={{ width: "100%" }}
+                                items={seriesInformation
+                                    .slice(0, seriesPage * seriesSize)
+                                    .map((series, i) => {
+                                        return {
+                                            key: `${i}`,
+                                            label: `${series.name}`,
+                                            children: (
+                                                <>
+                                                    {series.episodes
+                                                        .slice(
+                                                            0,
+                                                            episodesPage *
+                                                                episodesSize
+                                                        )
+                                                        .map(ep => {
+                                                            return (
+                                                                <Flex>
+                                                                    • Серия{" "}
+                                                                    {ep.number}:
+                                                                    "{ep.name}"
+                                                                </Flex>
+                                                            );
+                                                        })}
+                                                    {series.episodes.length >
+                                                    episodesPage *
+                                                        episodesSize ? (
+                                                        <Button
+                                                            dashed="true"
+                                                            className="btn btn-series"
+                                                            onClick={
+                                                                showMoreEpisodes
+                                                            }
+                                                        >
+                                                            show more
+                                                        </Button>
+                                                    ) : null}
 
-                                            {episodesPage > 1 ? (
-                                                <Button
-                                                    dashed="true"
-                                                    className="btn btn-series"
-                                                    onClick={
-                                                        resetEpisodesPagination
-                                                    }
-                                                >
-                                                    show less
-                                                </Button>
-                                            ) : null}
-                                        </>
-                                    ),
-                                };
-                            })}
-                    />
-                    <div className="movie__btns">
-                        {seriesInformation.length ===
-                        seriesPage * seriesSize ? (
-                            <Button
-                                dashed="true"
-                                className="btn btn-series"
-                                onClick={getNextSeriesInformation}
-                            >
-                                show more
-                            </Button>
-                        ) : null}
+                                                    {episodesPage > 1 ? (
+                                                        <Button
+                                                            dashed="true"
+                                                            className="btn btn-series"
+                                                            onClick={
+                                                                resetEpisodesPagination
+                                                            }
+                                                        >
+                                                            show less
+                                                        </Button>
+                                                    ) : null}
+                                                </>
+                                            ),
+                                        };
+                                    })}
+                            />
+                            <div className="movie__btns">
+                                {seriesInformation.length ===
+                                seriesPage * seriesSize ? (
+                                    <Button
+                                        dashed="true"
+                                        className="btn btn-series"
+                                        onClick={getNextSeriesInformation}
+                                    >
+                                        show more
+                                    </Button>
+                                ) : null}
 
-                        {seriesInformation?.length > 3 ? (
-                            <Button
-                                dashed="true"
-                                className="btn btn-series"
-                                onClick={getResetSeriesInformation}
-                            >
-                                show less
-                            </Button>
-                        ) : null}
+                                {seriesInformation?.length > 3 ? (
+                                    <Button
+                                        dashed="true"
+                                        className="btn btn-series"
+                                        onClick={getResetSeriesInformation}
+                                    >
+                                        show less
+                                    </Button>
+                                ) : null}
+                            </div>
+                        </div>
+                    </>
+                ) : (
+                    <div className="movie__sub-title">
+                        Нет информации о сезонах/сериях
                     </div>
-                </div>
+                )}
             </div>
 
             <div className="movie__additional-info">
                 <div className="movie__reviews">
-                    <div className="movie__reviews-content">
-                        {reviews
-                            .slice(0, reviewsPage * reviewsSize)
-                            .map(review => {
-                                return <MovieReviewsUI props={review} />;
-                            })}
-                    </div>
-                    <div className="movie__btns">
-                        <Button
-                            dashed="true"
-                            className="btn btn-reviews"
-                            onClick={getNextReviews}
-                            loading={reviewsLoading}
-                        >
-                            more reviews
-                        </Button>
-                        {reviews?.length > 3 ? (
-                            <Button
-                                dashed="true"
-                                className="btn btn-reviews"
-                                onClick={getResetReviews}
-                            >
-                                show less
-                            </Button>
-                        ) : null}
-                    </div>
+                    {reviews && reviews.length > 0 ? (
+                        <>
+                            {" "}
+                            <div className="movie__reviews-content">
+                                {reviews
+                                    .slice(0, reviewsPage * reviewsSize)
+                                    .map(review => {
+                                        return (
+                                            <MovieReviewsUI props={review} />
+                                        );
+                                    })}
+                            </div>
+                            <div className="movie__btns">
+                                <Button
+                                    dashed="true"
+                                    className="btn btn-reviews"
+                                    onClick={getNextReviews}
+                                    loading={reviewsLoading}
+                                >
+                                    more reviews
+                                </Button>
+                                {reviews?.length > 3 ? (
+                                    <Button
+                                        dashed="true"
+                                        className="btn btn-reviews"
+                                        onClick={getResetReviews}
+                                    >
+                                        show less
+                                    </Button>
+                                ) : null}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="movie__sub-title">
+                            Нет информации об отзывах
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
