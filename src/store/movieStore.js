@@ -17,6 +17,10 @@ class MovieStore {
     actorsPage = 1;
     actorsSize = 10;
     seriesInformation = [];
+    seriesPage = 0;
+    seriesSize = 3;
+    episodesPage = 1;
+    episodesSize = 5;
     isLoading = false;
     hasError = false;
 
@@ -30,7 +34,7 @@ class MovieStore {
         this.getMovie();
         this.getReviews(1);
         this.getPosters();
-        this.getSeriesInformation();
+        this.getSeriesInformation(1);
     };
 
     getMovie = async () => {
@@ -126,16 +130,24 @@ class MovieStore {
         this.actorsPage = 1;
     };
 
-    getSeriesInformation = async () => {
-        this.isLoading = true;
+    getSeriesInformation = async page => {
         this.hasError = false;
 
         try {
-            const fetchedSeries = await getMovieSeriesInformation(this.id);
+            const fetchedSeries = await getMovieSeriesInformation(
+                this.id,
+                page,
+                this.seriesSize
+            );
 
             runInAction(() => {
-                this.seriesInformation = fetchedSeries;
-                this.isLoading = false;
+                if (page !== 1) {
+                    this.seriesInformation.push(...fetchedSeries);
+                } else {
+                    this.seriesInformation = fetchedSeries;
+                }
+                this.seriesPage = page;
+                // this.reviewsLoading = false;
             });
         } catch (e) {
             runInAction(() => {
@@ -144,6 +156,32 @@ class MovieStore {
             });
             console.error(e);
         }
+    };
+
+    getNextSeriesInformation = () => {
+        if (
+            this.seriesInformation.length >=
+            (this.seriesPage + 1) * this.seriesSize
+        ) {
+            this.seriesPage += 1;
+            return;
+        }
+
+        this.getSeriesInformation(this.seriesPage + 1);
+    };
+
+    getResetSeriesInformation = () => {
+        this.seriesPage = 1;
+
+        this.getSeriesInformation(this.seriesPage);
+    };
+
+    showMoreEpisodes = () => {
+        this.episodesPage += 1;
+    };
+
+    resetEpisodesPagination = () => {
+        this.episodesPage = 1;
     };
 
     setMovies = movie => {

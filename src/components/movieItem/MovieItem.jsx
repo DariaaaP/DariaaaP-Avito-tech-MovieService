@@ -12,15 +12,7 @@ import { MovieStoreProvider } from "../../store/movieStore";
 const MovieItem = observer(() => {
     const { id } = useParams();
 
-    const {
-        movie,
-        reviews,
-        posters,
-        seriesInformation,
-        init,
-        isLoading,
-        hasError,
-    } = useMovieStore();
+    const { init, isLoading, hasError } = useMovieStore();
 
     useEffect(() => {
         init(id);
@@ -31,15 +23,7 @@ const MovieItem = observer(() => {
 
     if (hasError) return <ErrorMessage />;
 
-    return (
-        <MovieOneItem
-            movie={movie}
-            key={movie.id}
-            reviews={reviews}
-            posters={posters}
-            seriesInformation={seriesInformation}
-        />
-    );
+    return <MovieOneItem />;
 });
 
 const MovieItemWrapped = () => {

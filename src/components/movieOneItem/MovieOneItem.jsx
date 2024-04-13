@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 
-import { Button, Card, Carousel, Flex } from "antd";
+import { Button, Card, Carousel, Flex, Collapse } from "antd";
+
 import { StarTwoTone } from "@ant-design/icons";
 
 import img from "../../resources/img/plug.png";
@@ -26,6 +27,14 @@ const MovieOneItem = observer(() => {
         showMoreActors,
         resetActorsPagination,
         seriesInformation,
+        seriesPage,
+        seriesSize,
+        episodesPage,
+        episodesSize,
+        resetEpisodesPagination,
+        showMoreEpisodes,
+        getNextSeriesInformation,
+        getResetSeriesInformation,
         init,
         isLoading,
         hasError,
@@ -48,11 +57,16 @@ const MovieOneItem = observer(() => {
         similarMovies,
     } = movie;
 
+    // console.log("seriesInformation: ", seriesInformation);
+
     return (
         <div className="movie-page">
             <div className="movie-page__link-back">
+                <Link to="/" className="movie-page__back">
+                    Back to all movies
+                </Link>
                 <Link onClick={() => navigate(-1)} className="movie-page__back">
-                    Back to all
+                    Back
                 </Link>
             </div>
             <div className="movie__container">
@@ -138,7 +152,7 @@ const MovieOneItem = observer(() => {
                 <div className="movie__actors">
                     <span className="movie__sub-title">Актёры:</span>
                     {actors?.slice(0, actorsPage * actorsSize).map(actor => {
-                        return <Flex>{actor.name}</Flex>;
+                        return <Flex> • {actor.name}</Flex>;
                     })}
                     {actors?.length <= actorsPage * actorsSize ? (
                         <Button
@@ -161,6 +175,85 @@ const MovieOneItem = observer(() => {
                     )}
                 </div>
             </div>
+            <div className="movie__additional-info">
+                <div className="movie__series">
+                    <Collapse
+                        style={{ width: "100%" }}
+                        items={seriesInformation
+                            .slice(0, seriesPage * seriesSize)
+                            .map((series, i) => {
+                                return {
+                                    key: `${i}`,
+                                    label: `${series.name}`,
+                                    children: (
+                                        <>
+                                            {series.episodes
+                                                .slice(
+                                                    0,
+                                                    episodesPage * episodesSize
+                                                )
+                                                .map(ep => {
+                                                    return (
+                                                        <Flex>
+                                                            • Серия {ep.number}:
+                                                            "{ep.name}"
+                                                        </Flex>
+                                                    );
+                                                })}
+                                            {series.episodes.length >
+                                            episodesPage * episodesSize ? (
+                                                <Button
+                                                    dashed="true"
+                                                    className="btn btn-series"
+                                                    onClick={showMoreEpisodes}
+                                                >
+                                                    show more
+                                                </Button>
+                                            ) : null}
+
+                                            {episodesPage > 1 ? (
+                                                <Button
+                                                    dashed="true"
+                                                    className="btn btn-series"
+                                                    onClick={
+                                                        resetEpisodesPagination
+                                                    }
+                                                >
+                                                    show less
+                                                </Button>
+                                            ) : null}
+                                        </>
+                                    ),
+                                };
+                            })}
+                    />
+                    <div className="movie__btns">
+                        {console.log("series: ", seriesInformation.length)}
+                        {console.log("+: ", seriesPage * seriesSize)}
+                        {seriesInformation.length ===
+                        seriesPage * seriesSize ? (
+                            <Button
+                                dashed="true"
+                                className="btn btn-series"
+                                onClick={getNextSeriesInformation}
+                            >
+                                show more
+                            </Button>
+                        ) : null}
+
+                        {seriesInformation?.length > 3 ? (
+                            <Button
+                                dashed="true"
+                                className="btn btn-series"
+                                onClick={getResetSeriesInformation}
+                            >
+                                show less
+                            </Button>
+                        ) : null}
+                    </div>
+                </div>
+            </div>
+
             <div className="movie__additional-info">
                 <div className="movie__reviews">
                     <div className="movie__reviews-content">

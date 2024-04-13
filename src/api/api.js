@@ -98,10 +98,10 @@ export async function getMovieReviews(id, page = 1, size = 3) {
     }
 }
 
-export async function getMovieSeriesInformation(id) {
+export async function getMovieSeriesInformation(id, page = 1, size = 3) {
     try {
         const response = await instance.get(
-            `season?page=1&limit=10&selectFields=&movieId=${id}`
+            `season?page=${page}&limit=${size}&sortField=enName&sortType=1&movieId=${id}`
         );
         return response.data.docs.map(_transformMovieSeriesInformation);
     } catch (error) {

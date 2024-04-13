@@ -8,7 +8,7 @@
 
     &__link-back {
         display: flex;
-        justify-content: end;
+        justify-content: space-between;
     
     }
     
@@ -17,7 +17,8 @@
         font-weight: bold;
         font-size: 18px;
         line-height: 24px;
-        text-decoration-line: none;
+        text-decoration-line: underline solid $color-black;
+        text-underline-offset: 5px;
         &:visited {
             color: $color-black;
         }
@@ -138,6 +139,10 @@
         }
     }
 
+    &__series {
+        width: 100%;
+    }
+
     &__btns {
         display: flex;
         justify-content: space-around;
@@ -155,7 +160,7 @@
 }
 
 .btn {
-    &-reviews {
+    &-reviews, &-series {
         margin-top: 3rem;
 
         text-decoration: underline dotted $color-grey-dark;
