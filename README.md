@@ -1,70 +1,28 @@
-# Getting Started with Create React App
+# Тестовое задание для стажёра Frontend 2024
+[GitHub](https://github.com/avito-tech/frontend-trainee-assignment-2024)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Запуск проекта в режиме разработки:
 
-In the project directory, you can run:
+1) Установить зависимости: `npm install`
 
-### `npm start`
+2) Запустить проект: `TOKEN=<api_token> npm run start `
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+3) Проект доступен по ссылке: [http://localhost:7070](http://localhost:7070)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Запуск проекта в Docker:
 
-### `npm test`
+1) Установить Docker
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+2) В терминале прописать: `TOKEN=<api_token> docker-compose up —build`
 
-### `npm run build`
+3) Дождаться завершения билда и запуска сервера
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+4) Проект доступен по ссылке: [http://localhost:7070](http://localhost:7070)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Список вопросов/проблем:
 
-### `npm run eject`
+1) Объединённый поиск фильмов по названию и по фильтрам:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    - к сожалению, API не позволяет выполнить данную задачу напрямую, фильтровать данные несколько раз (по имени -> по фильтрам / по фильтрами -> по имени) достаточно ресурсоёмкий процесс, поэтому были реализованы два отдельных и независящих друг от друга поиска по имени и по фильтрам
