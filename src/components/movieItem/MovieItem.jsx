@@ -17,7 +17,7 @@ const MovieItem = observer(() => {
     useEffect(() => {
         init(id);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [id]);
 
     if (isLoading) return <Spinner />;
 

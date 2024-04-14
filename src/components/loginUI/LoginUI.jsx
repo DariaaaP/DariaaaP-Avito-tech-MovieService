@@ -12,16 +12,13 @@ const LoginUI = () => {
     useEffect(() => {
         setClientReady(true);
     }, []);
-    const onFinish = values => {
-        console.log("Finish:", values);
-    };
+
     return (
         <Form
             form={form}
             name="horizontal_login"
             layout="inline"
-            onFinish={onFinish}
-            style={{ "flex-direction": "column", gap: "3rem" }}
+            style={{ flexDirection: "column", gap: "3rem" }}
         >
             <Flex className="wrapper-form">
                 <Form.Item

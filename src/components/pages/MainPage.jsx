@@ -6,16 +6,14 @@ import { MoviesListStoreProvider } from "../../store/moviesListStore";
 
 const MainPage = () => {
     return (
-        <>
-            {/* // <MoviesListStoreProvider> */}
+        <MoviesListStoreProvider>
             <AppHeader />
             <Content style={{ padding: "5% 3%" }}>
                 <ErrorBoundary>
                     <MoviesList />
                 </ErrorBoundary>
             </Content>
-            {/* // </MoviesListStoreProvider> */}
-        </>
+        </MoviesListStoreProvider>
     );
 };
 

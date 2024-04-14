@@ -4,22 +4,19 @@ import Page404 from "../pages/Page404";
 import LoginPage from "../pages/LoginPage";
 import MovieRandom from "../movieRandom/MovieRandom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { MoviesListStoreProvider } from "../../store/moviesListStore";
 
 function App() {
     return (
-        <MoviesListStoreProvider>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<MainPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/random" element={<MovieRandom />} />
-                    <Route path="/:id" element={<MovieItem />} />
-                    <Route path="*" element={<Page404 />} />
-                </Routes>
-            </Router>
-        </MoviesListStoreProvider>
-    );
+        <Router>
+            <Routes>
+                <Route path="/" element={<MainPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/random" element={<MovieRandom />} />
+                <Route path="/:id" element={<MovieItem />} />
+                <Route path="*" element={<Page404 />} />
+            </Routes>
+        </Router>
+);
 }
 
 export default App;

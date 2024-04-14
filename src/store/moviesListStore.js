@@ -1,13 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { createContext, useContext, useRef } from "react";
-import {
-    getMoviesByName,
-    getMoviesByFilters,
-    getCountries,
-    getGenres,
-    getTypesMovie,
-    getRandomMovie,
-} from "../api/api";
+import { getMoviesByName, getMoviesByFilters, getCountries } from "../api/api";
 
 class MoviesListStore {
     movies = [];
@@ -18,21 +11,13 @@ class MoviesListStore {
     moviesAgeRating = [0, 6, 12, 18]; // найти оптимальный вариант
     searchYear = null;
     searchText = null;
+    previousSearchesMaxLength = 20;
+    previousSearches = [];
     searchCountry = null;
     searchAge = null;
     areShownMoviesFiltered = false;
     isLoading = false;
     hasError = false;
-
-    genres = [];
-    types = [];
-    randomGenre = null;
-    randomCountry = null;
-    randomType = null;
-    randomYear = null;
-    randomRating = null;
-    idRandomMovie = null;
-    isRandomLoading = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -63,13 +48,16 @@ class MoviesListStore {
             this.getMoviesByName();
         }
 
+        this.initPreviousSearches();
         this.getCountries();
     };
 
-    initRandom = () => {
-        this.getCountries();
-        this.getGenres();
-        this.getTypes();
+    initPreviousSearches = () => {
+        const data = JSON.parse(localStorage.getItem("searchValues"));
+
+        if (data) {
+            this.previousSearches = data;
+        }
     };
 
     getMoviesByName = async () => {
@@ -80,6 +68,8 @@ class MoviesListStore {
         this.searchYear = null;
 
         try {
+            this.saveSearchText();
+
             const [fetchedMovies, total] = await getMoviesByName(
                 this.currentPage,
                 this.pageSize,
@@ -99,6 +89,23 @@ class MoviesListStore {
             });
             console.error(e);
         }
+    };
+
+    saveSearchText = () => {
+        if (!this.searchText) return;
+
+        this.previousSearches = [
+            ...new Set([...this.previousSearches, this.searchText]),
+        ];
+
+        if (this.previousSearches.length > this.previousSearchesMaxLength) {
+            this.previousSearches.shift();
+        }
+
+        localStorage.setItem(
+            "searchValues",
+            JSON.stringify(this.previousSearches)
+        );
     };
 
     getMoviesByFilters = async () => {
@@ -160,70 +167,6 @@ class MoviesListStore {
         }
     };
 
-    getGenres = async () => {
-        this.isLoading = true;
-        this.hasError = false;
-
-        try {
-            const genres = await getGenres();
-            runInAction(() => {
-                this.genres = genres;
-            });
-        } catch (e) {
-            runInAction(() => {
-                this.hasError = true;
-                this.isLoading = false;
-            });
-            console.error(e);
-        }
-    };
-
-    getTypes = async () => {
-        this.isLoading = true;
-        this.hasError = false;
-
-        try {
-            const types = await getTypesMovie();
-            runInAction(() => {
-                this.types = types;
-            });
-        } catch (e) {
-            runInAction(() => {
-                this.hasError = true;
-                this.isLoading = false;
-            });
-            console.error(e);
-        }
-    };
-
-    getRandomMovie = async () => {
-        this.isRandomLoading = true;
-        this.hasError = false;
-        this.searchText = null;
-
-        try {
-            const idRandomMovie = await getRandomMovie(
-                this.randomType,
-                this.randomYear,
-                this.randomRating,
-                this.randomGenre,
-                this.randomCountry
-            );
-
-            runInAction(() => {
-                this.idRandomMovie = idRandomMovie;
-
-                this.isRandomLoading = false;
-            });
-        } catch (e) {
-            runInAction(() => {
-                this.hasError = true;
-                this.isLoading = false;
-            });
-            console.error(e);
-        }
-    };
-
     setMovies = movies => {
         this.movies = movies;
     };
@@ -250,26 +193,6 @@ class MoviesListStore {
 
     setSearchAge = searchAge => {
         this.searchAge = searchAge;
-    };
-    setRandomGenre = randomGenre => {
-        this.randomGenre = randomGenre;
-    };
-    setRandomCountry = randomCountry => {
-        this.randomCountry = randomCountry;
-    };
-
-    setRandomType = randomType => {
-        this.randomType = randomType;
-    };
-
-    setRandomYear = randomYear => {
-        this.randomYear = randomYear;
-    };
-    setRandomRating = randomRating => {
-        this.randomRating = randomRating;
-    };
-    setRandomID = idRandomMovie => {
-        this.idRandomMovie = idRandomMovie;
     };
 
     resetFiltersPanel = () => {

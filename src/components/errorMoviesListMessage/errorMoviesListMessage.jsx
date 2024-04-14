@@ -1,25 +1,7 @@
-import { useLocation, useNavigate } from "react-router-dom";
-
 import img from "./crying.gif";
 import "./errormovieslistmessage.scss";
 
-import { useMoviesListStore } from "../../store/moviesListStore";
-import { observer } from "mobx-react";
-
-const ErrorMoviesListMessage = observer(() => {
-    const {
-        getMovies,
-        setCurrentPage,
-
-        setSearchCountry,
-        setSearchAge,
-
-        setSearchYear,
-    } = useMoviesListStore();
-
-    const location = useLocation();
-    const navigate = useNavigate();
-    const searchParams = new URLSearchParams(location.search);
+const ErrorMoviesListMessage = () => {
     return (
         <div className="error-message">
             <h1 className="error-message__title">
@@ -31,6 +13,7 @@ const ErrorMoviesListMessage = observer(() => {
             </h1>
             <img
                 style={{
+                    width: "100%",
                     display: "block",
                     objectFit: "contain",
                     margin: "0 auto",
@@ -38,25 +21,8 @@ const ErrorMoviesListMessage = observer(() => {
                 src={img}
                 alt="Not found movies"
             />
-            <button
-                className="error-message__back"
-                onClick={() => {
-                    setSearchCountry(null);
-                    setSearchYear(null);
-                    setSearchAge(null);
-                    searchParams.delete("year");
-                    searchParams.delete("ageRating");
-                    searchParams.delete("country");
-                    navigate(location.pathname + "?" + searchParams.toString());
-                    searchParams.delete("page");
-                    setCurrentPage(1);
-                    getMovies();
-                }}
-            >
-                Back to all
-            </button>
         </div>
     );
-});
+};
 
 export default ErrorMoviesListMessage;

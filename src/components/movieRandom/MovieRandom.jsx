@@ -1,33 +1,53 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, DatePicker, Form, Select, InputNumber } from "antd";
 
-import { useMoviesListStore } from "../../store/moviesListStore";
+import {
+    RandomMovieStoreProvider,
+    useRandomMovieStore,
+} from "../../store/randomMovieStore";
 import { observer } from "mobx-react";
 
+import ErrorMoviesListMessage from "../errorMoviesListMessage/errorMoviesListMessage";
+
 import "./movierandom.scss";
+import Spinner from "../spinner/Spinner";
 
 const MovieRandom = observer(() => {
     const {
+        init,
+        isLoading,
         countriesAll,
-        genres,
-        types,
-        initRandom,
-        setRandomGenre,
-        setRandomCountry,
-        setRandomType,
-        setRandomYear,
-        setRandomRating,
-        setRandomID,
+        setCountry,
+        genresOptions,
+        setGenres,
+        contentTypesOptions,
+        setContentTypes,
+        setYear,
+        setRating,
+        networksOptions,
+        onNetworksSearchTextChange,
+        setNetworks,
         getRandomMovie,
         idRandomMovie,
-        isRandomLoading,
-    } = useMoviesListStore();
+        isLookingForRandomMovie,
+        hasNoResult,
+    } = useRandomMovieStore();
+
+    const nagivate = useNavigate();
 
     useEffect(() => {
-        initRandom();
+        init();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        if (idRandomMovie) {
+            nagivate(`/${idRandomMovie}`);
+        }
+    }, [idRandomMovie, nagivate]);
+
+    if (isLoading) return <Spinner />;
 
     return (
         <div className="wrapper-random">
@@ -36,104 +56,98 @@ const MovieRandom = observer(() => {
                     Back
                 </Link>
             </div>
-            {idRandomMovie ? (
-                <div className="wrapper-results">
-                    <Link
-                        to={`/${idRandomMovie}`}
-                        onClick={() => {
-                            setRandomID(null);
-                        }}
-                    >
-                        <Button>Случайный фильм</Button>
-                    </Link>
-                </div>
-            ) : (
-                <Form
-                    className="wrapper-random__form"
-                    labelCol={{
-                        span: 14,
-                    }}
-                    wrapperCol={{
-                        span: 14,
-                    }}
-                    layout="vertical"
-                >
-                    <Form.Item label="Страна производства" name="Country">
-                        <Select onChange={value => setRandomCountry(value)}>
-                            {countriesAll?.map(item => (
-                                <Select.Option
-                                    value={item.name}
-                                    key={item.name}
-                                >
-                                    {item.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item label="Жанр" name="Genre">
-                        <Select onChange={value => setRandomGenre(value)}>
-                            {genres?.map(item => (
-                                <Select.Option
-                                    value={item.name}
-                                    key={item.name}
-                                >
-                                    {item.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item label="Тип контента" name="Type">
-                        <Select onChange={value => setRandomType(value)}>
-                            {types?.map(item => (
-                                <Select.Option
-                                    value={item.name}
-                                    key={item.name}
-                                >
-                                    {item.name}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item>
-                    <Form.Item label="Год выпуска" name="Year">
-                        <DatePicker
-                            allowClear
-                            mode="year"
-                            picker="year"
-                            onChange={value => setRandomYear(value?.$y)}
-                        />
-                    </Form.Item>
-                    <Form.Item label="Рейтинг КП" name="Raiting">
-                        <InputNumber
-                            min={1}
-                            max={9}
-                            onChange={value => {
-                                setRandomRating(value);
-                                console.log(value);
-                            }}
-                        />
-                    </Form.Item>
-                    {/* <Form.Item label="Network">
-                    <Select>
-                        <Select.Option>что-то</Select.Option>
+            {hasNoResult && <ErrorMoviesListMessage />}
+            <Form
+                className="wrapper-random__form"
+                labelCol={{
+                    span: 14,
+                }}
+                wrapperCol={{
+                    span: 14,
+                }}
+                layout="vertical"
+            >
+                <Form.Item label="Страна производства" name="Country">
+                    <Select onChange={value => setCountry(value)}>
+                        {countriesAll?.map(({ name }) => (
+                            <Select.Option value={name} key={name}>
+                                {name}
+                            </Select.Option>
+                        ))}
                     </Select>
-                </Form.Item> */}
-                    <Form.Item>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            onClick={() => {
-                                getRandomMovie();
-                            }}
-                            dashed="true"
-                            loading={isRandomLoading}
-                        >
-                            Применить фильтры
-                        </Button>
-                    </Form.Item>
-                </Form>
-            )}
+                </Form.Item>
+                <Form.Item label="Жанр" name="Genre">
+                    <Select
+                        mode="multiple"
+                        onChange={value => setGenres(value)}
+                    >
+                        {genresOptions?.map(({ name }) => (
+                            <Select.Option value={name} key={name}>
+                                {name}
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="Тип контента" name="Type">
+                    <Select
+                        mode="multiple"
+                        onChange={value => setContentTypes(value)}
+                    >
+                        {contentTypesOptions?.map(({ name, displayName }) => (
+                            <Select.Option value={name} key={name}>
+                                {displayName}
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+                <Form.Item label="Год выпуска" name="Year">
+                    <DatePicker
+                        allowClear
+                        mode="year"
+                        picker="year"
+                        onChange={value => setYear(value?.$y)}
+                    />
+                </Form.Item>
+                <Form.Item label="Рейтинг КП" name="Raiting">
+                    <InputNumber
+                        min={1}
+                        max={9}
+                        onChange={value => {
+                            setRating(value);
+                        }}
+                    />
+                </Form.Item>
+                <Form.Item label="Network">
+                    <Select
+                        mode="multiple"
+                        onChange={value => setNetworks(value)}
+                        onSearch={onNetworksSearchTextChange}
+                        options={networksOptions.map(({ title }) => ({
+                            value: title,
+                        }))}
+                    />
+                </Form.Item>
+                <Form.Item>
+                    <Button
+                        type="primary"
+                        htmlType="submit"
+                        onClick={getRandomMovie}
+                        dashed="true"
+                        loading={isLookingForRandomMovie}
+                    >
+                        Случайный фильм
+                    </Button>
+                </Form.Item>
+            </Form>
+            {/* {hasNoResult && <ErrorMoviesListMessage />} */}
         </div>
     );
 });
 
-export default MovieRandom;
+const MovieRandomWrapped = () => (
+    <RandomMovieStoreProvider>
+        <MovieRandom />
+    </RandomMovieStoreProvider>
+);
+
+export default MovieRandomWrapped;

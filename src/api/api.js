@@ -16,8 +16,6 @@ const instance2 = axios.create({
     },
 });
 
-//https://api.kinopoisk.dev/v1.4/image?page=1&limit=10&movieId=12345
-
 /**
  * @param {number} page
  * @param {number} limit
@@ -176,26 +174,55 @@ export async function getRandomMovie(
     networks
 ) {
     try {
-        let url = "movie/random?";
-        if (type) {
-            url += `&type=${type}`;
+        let url = "movie/random";
+        const params = new URLSearchParams();
+
+        if (type?.length) {
+            type.forEach(t => {
+                params.append("type", t);
+            });
         }
         if (year) {
-            url += `&year=${year}`;
+            params.append("year", year);
         }
         if (rating) {
-            url += `&rating.kp=${rating}-10`;
+            params.append("rating.kp", rating);
         }
-        if (genre) {
-            url += `&genres.name=${genre}`;
+        if (genre?.length) {
+            genre.forEach(g => {
+                params.append("genres.name", g);
+            });
         }
         if (country) {
-            url += `&countries.name=${country}`;
+            params.append("countries.name", country);
+        }
+        if (networks?.length) {
+            networks.forEach(n => {
+                params.append("networks.items.name", n);
+            });
+        }
+
+        url += `?${params.toString()}`;
+
+        const response = await instance.get(url);
+
+        return response.data?.id;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export async function getNetworks(title) {
+    try {
+        let url = "studio?page=1&limit=10";
+
+        if (title) {
+            url += `&title=${title}`;
         }
 
         const response = await instance.get(url);
 
-        return response.data.id;
+        return response.data.docs;
     } catch (error) {
         console.error(error);
     }

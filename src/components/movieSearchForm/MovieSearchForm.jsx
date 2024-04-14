@@ -5,12 +5,11 @@ import { observer } from "mobx-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import debounce from "lodash.debounce";
-
 const MovieSearchForm = observer(() => {
     const {
         searchText,
         setSearchText,
+        previousSearches,
         setCurrentPage,
         getMoviesByName,
         resetFiltersPanel,
@@ -21,30 +20,18 @@ const MovieSearchForm = observer(() => {
 
     const [search, setSearch] = useState(searchText);
 
-    let data = localStorage.getItem("searchValues")
-        ? [...new Set(JSON.parse(localStorage.getItem("searchValues")))]
-        : [];
-
-    const searchArr = [
-        ...new Set(JSON.parse(localStorage.getItem("searchValues"))),
-    ].map(item => {
-        return { value: `${item}` };
-    });
-
-    const debounceSearch = debounce(value => console.log(value), 1000);
-
     useEffect(() => {
         setSearch(searchText);
     }, [searchText]);
 
     return (
         <AutoComplete
-            options={searchArr}
+            options={previousSearches.map(s => ({ value: s }))}
             value={search}
             onChange={value => {
                 setSearch(value);
             }}
-            onSearch={debounceSearch}
+            onSearch={getMoviesByName}
             filterOption={(inputValue, option) =>
                 option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !==
                 -1
@@ -64,18 +51,6 @@ const MovieSearchForm = observer(() => {
                     if (value) {
                         searchParams.set("search", value);
                         setSearchText(value);
-
-                        if (data.length === 5) {
-                            data.shift();
-                        }
-                        data.push(value);
-                        localStorage.setItem(
-                            "searchValues",
-                            JSON.stringify(data)
-                        );
-                        console.log(
-                            JSON.parse(localStorage.getItem("searchValues"))
-                        );
                     } else {
                         searchParams.delete("search");
                         setSearch(null);

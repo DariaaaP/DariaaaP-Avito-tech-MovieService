@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Button, Card, Carousel, Flex, Collapse } from "antd";
@@ -12,6 +13,7 @@ import "./movieoneitem.scss";
 import { useMovieStore } from "../../store/movieStore";
 
 import MovieReviewsUI from "../movieReviewsUI/MovieReviewsUI";
+import { localizeContentTypeName } from "../../utils/localizeContentTypeName";
 
 const { Meta } = Card;
 const MovieOneItem = observer(() => {
@@ -42,6 +44,7 @@ const MovieOneItem = observer(() => {
     const navigate = useNavigate();
 
     const {
+        id,
         name,
         poster,
         year,
@@ -73,7 +76,9 @@ const MovieOneItem = observer(() => {
                     <h2 className="movie__name">{name}</h2>
                     <div className="movie__two-column movie__two-column_column-dir">
                         <p className="movie__descr movie__descr_year">{year}</p>
-                        <p className="movie__descr movie__descr_type">{type}</p>
+                        <p className="movie__descr movie__descr_type">
+                            {localizeContentTypeName(type)}
+                        </p>
                     </div>
                     <p className="movie__descr">{description}</p>
                     <div className="movie__two-column">
@@ -99,40 +104,41 @@ const MovieOneItem = observer(() => {
             <div className="movie__additional-info">
                 <div className="movie__similar-movies">
                     {similarMovies && similarMovies.length > 0 ? (
-                        <>
-                            {" "}
+                        <Fragment key={similarMovies}>
                             <span className="movie__sub-title">
                                 Похожие фильмы:
                             </span>
-                            <Carousel autoplay dotPosition={"top"}>
-                                {similarMovies?.map(item => {
+                            <Carousel key={id} autoplay dotPosition={"top"}>
+                                {similarMovies?.map((item, i) => {
                                     return (
-                                        <Link to={`/${item.id}`}>
-                                            <Card
-                                                key={item.id}
-                                                style={{
-                                                    width: "100%",
-                                                }}
-                                                cover={
-                                                    <img
-                                                        alt={item.name}
-                                                        src={
-                                                            item.poster
-                                                                .previewUrl
-                                                        }
+                                        <Fragment key={i}>
+                                            <Link to={`/${item.id}`}>
+                                                <Card
+                                                    key={i}
+                                                    style={{
+                                                        width: "100%",
+                                                    }}
+                                                    cover={
+                                                        <img
+                                                            alt={item.name}
+                                                            src={
+                                                                item.poster
+                                                                    .previewUrl
+                                                            }
+                                                        />
+                                                    }
+                                                >
+                                                    <Meta
+                                                        title={item.name}
+                                                        description={item.year}
                                                     />
-                                                }
-                                            >
-                                                <Meta
-                                                    title={item.name}
-                                                    description={item.year}
-                                                />
-                                            </Card>
-                                        </Link>
+                                                </Card>
+                                            </Link>
+                                        </Fragment>
                                     );
                                 })}
                             </Carousel>
-                        </>
+                        </Fragment>
                     ) : (
                         <div className="movie__sub-title">
                             Нет информации о похожих фильмах
@@ -143,10 +149,15 @@ const MovieOneItem = observer(() => {
                     {posters && posters.length > 0 ? (
                         <>
                             <span className="movie__sub-title">Постеры:</span>
-                            <Carousel autoplay dotPosition={"top"}>
+                            <Carousel
+                                autoplay
+                                dotPosition={"top"}
+                                key={posters}
+                            >
                                 {posters?.map((item, i) => {
                                     return (
                                         <img
+                                            key={i}
                                             style={{
                                                 objectFit: "cover",
                                                 width: "100%",
@@ -171,11 +182,18 @@ const MovieOneItem = observer(() => {
                             <span className="movie__sub-title">Актёры:</span>
                             {actors
                                 ?.slice(0, actorsPage * actorsSize)
-                                .map(actor => {
+                                .map((actor, i) => {
                                     if (actor.name === null) {
-                                        return <Flex> • {actor.enName}</Flex>;
+                                        return (
+                                            <Flex key={i}>
+                                                {" "}
+                                                • {actor.enName}
+                                            </Flex>
+                                        );
                                     } else {
-                                        return <Flex> • {actor.name}</Flex>;
+                                        return (
+                                            <Flex key={i}> • {actor.name}</Flex>
+                                        );
                                     }
                                 })}
                             {actors?.length <= 10 ? null : actors?.length <=
@@ -229,9 +247,9 @@ const MovieOneItem = observer(() => {
                                                             episodesPage *
                                                                 episodesSize
                                                         )
-                                                        .map(ep => {
+                                                        .map((ep, i) => {
                                                             return (
-                                                                <Flex>
+                                                                <Flex key={i}>
                                                                     • Серия{" "}
                                                                     {ep.number}:
                                                                     "{ep.name}"
@@ -301,34 +319,41 @@ const MovieOneItem = observer(() => {
 
             <div className="movie__additional-info">
                 {reviews && reviews.length > 0 ? (
-                    <div className="movie__reviews">
-                        <div className="movie__reviews-content">
-                            {reviews
-                                .slice(0, reviewsPage * reviewsSize)
-                                .map(review => {
-                                    return <MovieReviewsUI props={review} />;
-                                })}
-                        </div>
-                        <div className="movie__btns">
-                            <Button
-                                dashed="true"
-                                className="btn btn-reviews"
-                                onClick={getNextReviews}
-                                loading={reviewsLoading}
-                            >
-                                more reviews
-                            </Button>
-                            {reviews?.length > 3 ? (
+                    <Fragment key={reviews}>
+                        <div className="movie__reviews">
+                            <div className="movie__reviews-content">
+                                {reviews
+                                    .slice(0, reviewsPage * reviewsSize)
+                                    .map((review, i) => {
+                                        return (
+                                            <MovieReviewsUI
+                                                key={i}
+                                                props={review}
+                                            />
+                                        );
+                                    })}
+                            </div>
+                            <div className="movie__btns">
                                 <Button
                                     dashed="true"
                                     className="btn btn-reviews"
-                                    onClick={getResetReviews}
+                                    onClick={getNextReviews}
+                                    loading={reviewsLoading}
                                 >
-                                    show less
+                                    more reviews
                                 </Button>
-                            ) : null}
+                                {reviews?.length > 3 ? (
+                                    <Button
+                                        dashed="true"
+                                        className="btn btn-reviews"
+                                        onClick={getResetReviews}
+                                    >
+                                        show less
+                                    </Button>
+                                ) : null}
+                            </div>
                         </div>
-                    </div>
+                    </Fragment>
                 ) : (
                     <div className="movie__sub-title">
                         Нет информации об отзывах
