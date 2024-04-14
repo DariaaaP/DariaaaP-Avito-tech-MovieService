@@ -11,7 +11,7 @@ const ErrorMoviesListMessage = observer(() => {
         getMovies,
         setCurrentPage,
 
-        setSearchCountries,
+        setSearchCountry,
         setSearchAge,
 
         setSearchYear,
@@ -41,7 +41,7 @@ const ErrorMoviesListMessage = observer(() => {
             <button
                 className="error-message__back"
                 onClick={() => {
-                    setSearchCountries("");
+                    setSearchCountry(null);
                     setSearchYear(null);
                     setSearchAge(null);
                     searchParams.delete("year");

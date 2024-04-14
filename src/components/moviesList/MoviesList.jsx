@@ -16,7 +16,6 @@ import * as dayjs from "dayjs";
 const MoviesList = observer(() => {
     const {
         movies,
-        setMovies,
         total,
         areShownMoviesFiltered,
         currentPage,
@@ -27,6 +26,7 @@ const MoviesList = observer(() => {
         isLoading,
         hasError,
         getMovies,
+        resetFiltersPanel,
     } = useMoviesListStore();
 
     const location = useLocation();
@@ -60,7 +60,8 @@ const MoviesList = observer(() => {
                     to="/"
                     className="movie-page__back"
                     onClick={() => {
-                        setMovies([]);
+                        resetFiltersPanel();
+                        getMovies();
                     }}
                 >
                     Back to all movies
