@@ -133,7 +133,7 @@ export async function getCountries() {
 
 export async function getGenres() {
     try {
-        const response = await instance.get(
+        const response = await instance2.get(
             `movie/possible-values-by-field?field=genres.name`
         );
 
@@ -151,7 +151,7 @@ const _transformGenres = genres => {
 
 export async function getTypesMovie() {
     try {
-        const response = await instance.get(
+        const response = await instance2.get(
             `movie/possible-values-by-field?field=type`
         );
 
@@ -176,11 +176,26 @@ export async function getRandomMovie(
     networks
 ) {
     try {
-        const response = await instance.get(
-            `'https://api.kinopoisk.dev/v1.4/movie/random?typeNumber=${type}&year${year}=&rating.kp=${rating}&genres.name=${genre}&countries.name=${country}&networks.items.name=${networks}'`
-        );
+        let url = "movie/random?";
+        if (type) {
+            url += `&type=${type}`;
+        }
+        if (year) {
+            url += `&year=${year}`;
+        }
+        if (rating) {
+            url += `&rating.kp=${rating}-10`;
+        }
+        if (genre) {
+            url += `&genres.name=${genre}`;
+        }
+        if (country) {
+            url += `&countries.name=${country}`;
+        }
 
-        return _transformMovie(response.data);
+        const response = await instance.get(url);
+
+        return response.data.id;
     } catch (error) {
         console.error(error);
     }

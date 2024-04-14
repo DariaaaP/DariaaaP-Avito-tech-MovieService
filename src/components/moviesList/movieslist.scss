@@ -1,6 +1,11 @@
 @import "../../style/_mixins.scss";
 
+.movie-page__back {
+  justify-content: end;
+}
+
 .movies-container {
+  
   height: 80%;
   grid-column: center-start / center-end;
   margin: 3rem 0;

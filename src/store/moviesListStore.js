@@ -1,6 +1,13 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { createContext, useContext, useRef } from "react";
-import { getMoviesByName, getMoviesByFilters, getCountries } from "../api/api";
+import {
+    getMoviesByName,
+    getMoviesByFilters,
+    getCountries,
+    getGenres,
+    getTypesMovie,
+    getRandomMovie,
+} from "../api/api";
 
 class MoviesListStore {
     movies = [];
@@ -16,6 +23,16 @@ class MoviesListStore {
     areShownMoviesFiltered = false;
     isLoading = false;
     hasError = false;
+
+    genres = [];
+    types = [];
+    randomGenre = null;
+    randomCountry = null;
+    randomType = null;
+    randomYear = null;
+    randomRating = null;
+    idRandomMovie = null;
+    isRandomLoading = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -47,6 +64,12 @@ class MoviesListStore {
         }
 
         this.getCountries();
+    };
+
+    initRandom = () => {
+        this.getCountries();
+        this.getGenres();
+        this.getTypes();
     };
 
     getMoviesByName = async () => {
@@ -137,6 +160,70 @@ class MoviesListStore {
         }
     };
 
+    getGenres = async () => {
+        this.isLoading = true;
+        this.hasError = false;
+
+        try {
+            const genres = await getGenres();
+            runInAction(() => {
+                this.genres = genres;
+            });
+        } catch (e) {
+            runInAction(() => {
+                this.hasError = true;
+                this.isLoading = false;
+            });
+            console.error(e);
+        }
+    };
+
+    getTypes = async () => {
+        this.isLoading = true;
+        this.hasError = false;
+
+        try {
+            const types = await getTypesMovie();
+            runInAction(() => {
+                this.types = types;
+            });
+        } catch (e) {
+            runInAction(() => {
+                this.hasError = true;
+                this.isLoading = false;
+            });
+            console.error(e);
+        }
+    };
+
+    getRandomMovie = async () => {
+        this.isRandomLoading = true;
+        this.hasError = false;
+        this.searchText = null;
+
+        try {
+            const idRandomMovie = await getRandomMovie(
+                this.randomType,
+                this.randomYear,
+                this.randomRating,
+                this.randomGenre,
+                this.randomCountry
+            );
+
+            runInAction(() => {
+                this.idRandomMovie = idRandomMovie;
+
+                this.isRandomLoading = false;
+            });
+        } catch (e) {
+            runInAction(() => {
+                this.hasError = true;
+                this.isLoading = false;
+            });
+            console.error(e);
+        }
+    };
+
     setMovies = movies => {
         this.movies = movies;
     };
@@ -163,6 +250,26 @@ class MoviesListStore {
 
     setSearchAge = searchAge => {
         this.searchAge = searchAge;
+    };
+    setRandomGenre = randomGenre => {
+        this.randomGenre = randomGenre;
+    };
+    setRandomCountry = randomCountry => {
+        this.randomCountry = randomCountry;
+    };
+
+    setRandomType = randomType => {
+        this.randomType = randomType;
+    };
+
+    setRandomYear = randomYear => {
+        this.randomYear = randomYear;
+    };
+    setRandomRating = randomRating => {
+        this.randomRating = randomRating;
+    };
+    setRandomID = idRandomMovie => {
+        this.idRandomMovie = idRandomMovie;
     };
 
     resetFiltersPanel = () => {

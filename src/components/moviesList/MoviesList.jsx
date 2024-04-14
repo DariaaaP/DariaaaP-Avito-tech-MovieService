@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button, Pagination, Flex } from "antd";
+import { Pagination, Flex } from "antd";
 
 import Spinner from "../spinner/Spinner";
 import MovieCardUI from "../movieCardUI/movieCardUI";
@@ -11,7 +11,7 @@ import { useMoviesListStore } from "../../store/moviesListStore";
 import { observer } from "mobx-react";
 
 import "./movieslist.scss";
-import * as dayjs from 'dayjs';
+import * as dayjs from "dayjs";
 
 const MoviesList = observer(() => {
     const {
@@ -37,9 +37,11 @@ const MoviesList = observer(() => {
         const searchText = searchParams.get("search") || null;
         const page = Number(searchParams.get("page")) || null;
         const pageSize = Number(searchParams.get("pageSize")) || null;
-        const country = searchParams.get('country') || null;
-        const ageRating = searchParams.get('ageRating') || null;
-        const year = searchParams.get('year') ? dayjs(searchParams.get('year')) : null;
+        const country = searchParams.get("country") || null;
+        const ageRating = searchParams.get("ageRating") || null;
+        const year = searchParams.get("year")
+            ? dayjs(searchParams.get("year"))
+            : null;
 
         init(page, pageSize, searchText, country, ageRating, year);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -53,6 +55,17 @@ const MoviesList = observer(() => {
 
     return (
         <>
+            {areShownMoviesFiltered && (
+                <Link
+                    to="/"
+                    className="movie-page__back"
+                    onClick={() => {
+                        setMovies([]);
+                    }}
+                >
+                    Back to all movies
+                </Link>
+            )}
             <div className="movies-container">
                 {movies.map(item => (
                     <Link
@@ -64,18 +77,6 @@ const MoviesList = observer(() => {
                     </Link>
                 ))}
             </div>
-            {areShownMoviesFiltered && (
-                <Link to="/">
-                    <Button
-                        block
-                        onClick={() => {
-                            setMovies([]);
-                        }}
-                    >
-                        Back to all movies
-                    </Button>
-                </Link>
-            )}
             <Flex justify={"center"} style={{ marginTop: "3%" }}>
                 <Pagination
                     total={total}
